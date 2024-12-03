@@ -1,10 +1,149 @@
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
+import scalafx.scene.Scene
+import scalafx.scene.input.KeyCode
+import scalafx.scene.paint.Color
+import scalafx.scene.shape.{MoveTo, Rectangle}
+import scalafx.Includes.jfxKeyEvent2sfx
+import scalafx.animation.AnimationTimer
+import scala.collection.mutable
+import scalafx.scene.text.{Text, Font}
 
-object MyApp extends JFXApp3:
 
+
+
+// initialize player
+class Player(initialX : Double, initialY: Double, health: Int) :
+  //temporary/perma? show player character
+  val rectangle = new Rectangle():
+    width = 25
+    height = 55
+    fill = Color.Blue
+    x = initialX
+    y = initialY
+
+  //temporary, show attack
+  val showAttack = new Rectangle():
+    width = 60
+    height = 15
+    fill = Color.Black
+    x = x() + rectangle.width()
+    y = y() + rectangle.height() / 2
+    visible = false
+
+  // display health
+  val showHealth = new Rectangle():
+    height = 30
+    fill = Color.Green
+    x = 50
+    y = 50
+  val healthText = new Text():
+    text = "Health"
+    x = 55
+    y = 35
+    font = new Font(24)
+
+
+  var faceLeft : Boolean = false
+  def moveLeft () : Unit =
+    rectangle.x = rectangle.x() - 5
+    faceLeft = true
+    if showAttack.visible.value then
+      showAttack.x = rectangle.x() + rectangle.width()
+      showAttack.y = rectangle.y() + rectangle.height() / 2
+
+
+  def moveRight () : Unit =
+    rectangle.x = rectangle.x() + 5
+    faceLeft = false
+    if showAttack.visible.value then
+      showAttack.x = rectangle.x() + rectangle.width()
+      showAttack.y = rectangle.y() + rectangle.height() / 2
+
+  var jumpHeight : Double = 0
+  var jumping : Boolean = false
+
+  def jump () : Unit =
+    if !jumping then
+      jumpHeight = -12
+      jumping = true
+
+  def jumpUpdate() : Unit =
+    rectangle.y = rectangle.y() + jumpHeight
+    jumpHeight += 0.5
+    if rectangle.y() >= initialY then
+      rectangle.y = initialY
+      jumpHeight = 0
+      jumping = false
+
+  var attackOn: Boolean = false
+  var attackTime: Long = 0L
+
+  def attack(): Unit =
+    if !attackOn then
+      attackOn = true
+      attackTime = System.currentTimeMillis()
+      if faceLeft then
+        showAttack.x = rectangle.x() - showAttack.width()
+      else
+        showAttack.x = rectangle.x() + rectangle.width()
+
+      showAttack.y = rectangle.y() + rectangle.height() / 2
+      showAttack.visible = true
+
+
+  def attackUpdate(): Unit =
+    if attackOn then
+      if faceLeft then
+        showAttack.x = rectangle.x() - showAttack.width()
+      else
+        showAttack.x = rectangle.x() + rectangle.width()
+      showAttack.y = rectangle.y() + rectangle.height()/2
+
+      if System.currentTimeMillis() - attackTime > 300 then
+        showAttack.visible = false
+        attackOn = false
+
+  def healthBar () : Unit=
+    showHealth.width = (health/10) * 500
+
+// initialize TestDummy
+class Dummy(initialX : Double, initialY: Double, health:Int) :
+  val rectangle = new Rectangle():
+    width = 25
+    height = 55
+    fill = Color.Red
+    x = initialX
+    y = initialY
+
+
+
+
+
+object SimpleGame extends JFXApp3:
   override def start(): Unit =
-    stage = new PrimaryStage()
+    val keyInput: mutable.Set[KeyCode] = mutable.Set()
+    val player = new Player(100,455,10)
+    val dummy = new Dummy(500,455,999)
 
+    stage = new JFXApp3.PrimaryStage:
+      title = "Simple Game"
+      scene = new Scene(800, 800):
+        content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,dummy.rectangle)
 
-end MyApp
+        onKeyPressed = (event) =>
+          keyInput += event.code
+        onKeyReleased = (event) =>
+          keyInput -= event.code
+
+    val timer = AnimationTimer { _ =>
+      if keyInput.contains(KeyCode.Left) then player.moveLeft()
+      if keyInput.contains(KeyCode.Right) then player.moveRight()
+      if keyInput.contains(KeyCode.Space) then player.jump()
+      if keyInput.contains(KeyCode.Z) then player.attack()
+      player.jumpUpdate()
+      player.attackUpdate()
+      player.healthBar()
+
+    }
+    timer.start()
