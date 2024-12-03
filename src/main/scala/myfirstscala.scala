@@ -10,10 +10,18 @@ import scala.collection.mutable
 import scalafx.scene.text.{Text, Font}
 
 
+trait Hit :
+  val rectangle : Rectangle
+
+  def hitCollision(other : Hit): Boolean =
+    val thisBound =  rectangle.boundsInParent()
+    val otherBound = other.rectangle.boundsInParent()
+    thisBound.intersects(otherBound)
+
 
 
 // initialize player
-class Player(initialX : Double, initialY: Double, health: Int) :
+class Player(initialX : Double, initialY: Double, health: Int) extends Hit:
   //temporary/perma? show player character
   val rectangle = new Rectangle():
     width = 25
@@ -108,16 +116,13 @@ class Player(initialX : Double, initialY: Double, health: Int) :
     showHealth.width = (health/10) * 500
 
 // initialize TestDummy
-class Dummy(initialX : Double, initialY: Double, health:Int) :
+class Dummy(initialX : Double, initialY: Double, health:Int) extends Hit :
   val rectangle = new Rectangle():
     width = 25
     height = 55
     fill = Color.Red
     x = initialX
     y = initialY
-
-
-
 
 
 object SimpleGame extends JFXApp3:
@@ -145,5 +150,7 @@ object SimpleGame extends JFXApp3:
       player.attackUpdate()
       player.healthBar()
 
+      if player.showAttack.visible.value && player.hitCollision(dummy) then
+        println("Hit")
     }
     timer.start()
