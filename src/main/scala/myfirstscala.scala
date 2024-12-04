@@ -193,12 +193,12 @@ class Dummy(initialX : Double, initialY: Double) extends Hit :
       direction = 2
 
   var lastAttack : Long = 0L
-  var attackRange : Double = 500
 
   def autoAttack(currentTime : Long) : Unit =
-    if currentTime - lastAttack < 1000 then
-      attackBeam.x = rectangle.x() + attackRange
-      attackRange += 1.5
+
+    if currentTime - lastAttack > 1000 then
+      attackBeam.x = rectangle.x() + (if direction > 0 then rectangle.width() else - attackBeam.width())
+      attackBeam.y = rectangle.y() + rectangle.height() / 2 - attackBeam.height() / 2
       attackBeam.visible = true
       lastAttack = currentTime
 
