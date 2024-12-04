@@ -6,8 +6,12 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.{MoveTo, Rectangle}
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
+
 import scala.collection.mutable
-import scalafx.scene.text.{Text, Font}
+import scalafx.scene.text.{Font, Text}
+import scalafx.scene.media.{AudioClip, Media, MediaPlayer, MediaView}
+
+import java.nio.file.Paths
 
 
 trait Hit :
@@ -125,6 +129,9 @@ class Player(initialX : Double, initialY: Double) extends Hit:
     if Health == 0 then
       Health = 10
 
+  //TESTING PURPOSES
+  lazy private val skidSound = new AudioClip(
+    Paths.get("src/main/resources/audio/Metal pipe falling sound effect but its more violent.mp3").toUri.toString)
 
   def checkHitCollision (dummy : Dummy , hitDelay: Long) : Unit =
     // to test if the damage collision works
@@ -136,7 +143,7 @@ class Player(initialX : Double, initialY: Double) extends Hit:
       if hitDelay - hitCooldown > 500 then
         println("Dummy hit player")
         Health  -= dummy.Damage
-
+        skidSound.play()
         hitCooldown = hitDelay
 
 // initialize TestDummy
