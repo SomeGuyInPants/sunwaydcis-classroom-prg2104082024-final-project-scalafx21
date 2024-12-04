@@ -128,10 +128,13 @@ class Player(initialX : Double, initialY: Double, health: Int) extends Hit:
     if walkCollision(dummy) then
       if hitDelay - hitCooldown > 500 then
         println("Dummy hit player")
+        health -= dummy.Damage
         hitCooldown = hitDelay
 
 // initialize TestDummy
 class Dummy(initialX : Double, initialY: Double, health:Int) extends Hit :
+  val Damage : Int = 1
+  
   val rectangle = new Rectangle():
     width = 25
     height = 55
@@ -164,7 +167,6 @@ object SimpleGame extends JFXApp3:
       player.jumpUpdate()
       player.attackUpdate()
       player.healthBar()
-
 
       val hitDelay = System.currentTimeMillis()
       player.checkHitCollision(dummy, hitDelay)
