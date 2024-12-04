@@ -172,12 +172,15 @@ class Dummy(initialX : Double, initialY: Double) extends Hit :
     fill = Color.Red
     x = initialX
     y = initialY
+
   val attackBeam = new Rectangle():
-    width = 25
-    height = 25
+    width = 150
+    height = 15
     fill = Color.Green
-    x = 0
-    y = 0
+    x = initialX
+    y = initialY +25
+    visible = false
+
   var direction : Int = 2 // +ve = right, -ve = left
   var range : Int = 50
   var originalPos = initialX
@@ -190,12 +193,18 @@ class Dummy(initialX : Double, initialY: Double) extends Hit :
       direction = 2
 
   var lastAttack : Long = 0L
+  var attackRange : Double = 500
+
   def autoAttack(currentTime : Long) : Unit =
-    if System.currentTimeMillis() - lastAttack < 1000 then
-      attackBeam.x = rectangle.x() + range
-      attackBeam.y = rectangle.y() + rectangle.height() / 2 - attackBeam.height()/2
+    if currentTime - lastAttack < 1000 then
+      attackBeam.x = rectangle.x() + attackRange
+      attackRange += 1.5
+      attackBeam.visible = true
       lastAttack = currentTime
 
+  def autoAttUpdate(currentTime:Long): Unit =
+    if attackBeam.visible.value && currentTime - lastAttack > 300 then
+      attackBeam.visible = false
 
 
 
@@ -227,10 +236,11 @@ object SimpleGame extends JFXApp3:
       val hitDelay = System.currentTimeMillis()
       player.checkHitCollision(dummy, hitDelay)
       dummy.autoAttack(hitDelay)
-      
+      dummy.autoAttUpdate(hitDelay)
+
       player.healthBar()
       dummy.movement()
-  
+
       /*
       // to test if the damage collision works
       if player.showAttack.visible.value && player.hitCollision(dummy, player.showAttack) then
