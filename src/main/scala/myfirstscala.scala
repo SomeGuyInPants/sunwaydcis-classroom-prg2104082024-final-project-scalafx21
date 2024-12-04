@@ -145,6 +145,13 @@ class Player(initialX : Double, initialY: Double) extends Hit:
         Health  -= dummy.Damage
         skidSound.play()
         hitCooldown = hitDelay
+  def hitText(dummy: Dummy) : Unit =
+    val hit = new Text() :
+      text = "Hit!"
+      font = new Font(24)
+      x = dummy.rectangle.x()
+      y = dummy.rectangle.y() - 25
+
 
 // initialize TestDummy
 class Dummy(initialX : Double, initialY: Double) extends Hit :
@@ -186,6 +193,7 @@ object SimpleGame extends JFXApp3:
 
       val hitDelay = System.currentTimeMillis()
       player.checkHitCollision(dummy, hitDelay)
+      player.hitText(dummy)
 
       player.healthBar()
       /*
