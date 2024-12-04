@@ -159,13 +159,13 @@ object SimpleGame extends JFXApp3:
 
       // to test if the damage collision works
       if player.showAttack.visible.value && player.hitCollision(dummy, player.showAttack) then
-        if hitDelay - player.hitCooldown > 500 then
+        if hitDelay - player.hitCooldown > 250 then
           println("Hit")
           player.hitCooldown = hitDelay
       if player.walkCollision(dummy) then
         if hitDelay - player.hitCooldown > 500 then
           println("Dummy hit player")
           player.hitCooldown = hitDelay
-          
+
     }
     timer.start()
