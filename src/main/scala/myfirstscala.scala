@@ -27,7 +27,7 @@ trait Hit :
 // initialize player
 class Player(initialX : Double, initialY: Double) extends Hit:
 
-  var Health : Int = 10
+  var Health : Double = 10.0
   //temporary/perma? show player character
   val rectangle = new Rectangle():
     width = 25
@@ -46,7 +46,8 @@ class Player(initialX : Double, initialY: Double) extends Hit:
     visible = false
 
   // display health
-  val showHealth = new Rectangle():
+  var showHealth = new Rectangle():
+    width = (Health/10) * 100
     height = 30
     fill = Color.Green
     x = 50
@@ -121,6 +122,7 @@ class Player(initialX : Double, initialY: Double) extends Hit:
   def healthBar () : Unit=
     showHealth.width = (Health/10) * 500
 
+
   def checkHitCollision (dummy : Dummy , hitDelay: Long) : Unit =
     // to test if the damage collision works
     if showAttack.visible.value && hitCollision(dummy, showAttack) then
@@ -131,6 +133,7 @@ class Player(initialX : Double, initialY: Double) extends Hit:
       if hitDelay - hitCooldown > 500 then
         println("Dummy hit player")
         Health  -= dummy.Damage
+
         hitCooldown = hitDelay
 
 // initialize TestDummy
@@ -169,10 +172,12 @@ object SimpleGame extends JFXApp3:
       if keyInput.contains(KeyCode.Z) then player.attack()
       player.jumpUpdate()
       player.attackUpdate()
-      player.healthBar()
+
 
       val hitDelay = System.currentTimeMillis()
       player.checkHitCollision(dummy, hitDelay)
+
+      player.healthBar()
       /*
       // to test if the damage collision works
       if player.showAttack.visible.value && player.hitCollision(dummy, player.showAttack) then
