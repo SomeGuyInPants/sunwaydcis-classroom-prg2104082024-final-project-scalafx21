@@ -148,6 +148,7 @@ class Player(initialX : Double, initialY: Double) extends Hit:
         hit.x = dummy.rectangle.x() + dummy.rectangle.width()/2
         hit.y = dummy.rectangle.y()
         hit.visible = true
+
     if hit.visible.value && hitDelay - hitCooldown > 200 then
       hit.visible = false
 
@@ -171,6 +172,27 @@ class Dummy(initialX : Double, initialY: Double) extends Hit :
     fill = Color.Red
     x = initialX
     y = initialY
+  val attackBeam = new Rectangle():
+    width = 25
+    height = 25
+    fill = Color.Green
+    x = 0
+    y = 0
+  var direction : Int = 2 // +ve = right, -ve = left
+  var range : Int = 50
+  var originalPos = initialX
+
+  def movement() : Unit =
+    rectangle.x = rectangle.x() + direction
+    if rectangle.x() > originalPos + range then
+      direction = -2
+    else if rectangle.x() < originalPos - range then
+      direction = 2
+
+  def autoAttack() : Unit =
+    attackBeam.x = rectangle.x() + range
+
+
 
 
 object SimpleGame extends JFXApp3:
@@ -182,7 +204,7 @@ object SimpleGame extends JFXApp3:
     stage = new JFXApp3.PrimaryStage:
       title = "Simple Game"
       scene = new Scene(800, 800):
-        content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.rectangle)
+        content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.attackBeam,dummy.rectangle)
 
         onKeyPressed = (event) =>
           keyInput += event.code
@@ -197,12 +219,12 @@ object SimpleGame extends JFXApp3:
       player.jumpUpdate()
       player.attackUpdate()
 
-
       val hitDelay = System.currentTimeMillis()
       player.checkHitCollision(dummy, hitDelay)
 
-
       player.healthBar()
+      dummy.movement()
+      dummy.autoAttack()
       /*
       // to test if the damage collision works
       if player.showAttack.visible.value && player.hitCollision(dummy, player.showAttack) then
