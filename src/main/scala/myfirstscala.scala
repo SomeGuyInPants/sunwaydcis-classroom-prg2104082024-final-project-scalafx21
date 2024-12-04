@@ -142,11 +142,18 @@ class Player(initialX : Double, initialY: Double) extends Hit:
     // to test if the damage collision works
     if showAttack.visible.value && hitCollision(dummy, showAttack) then
       if hitDelay - hitCooldown > 300 then
-        println("Hit")
+        println("Hit") //to show that its really ocnnecting
         hitCooldown = hitDelay
+
+        hit.x = dummy.rectangle.x() + dummy.rectangle.width()/2
+        hit.y = dummy.rectangle.y()
+        hit.visible = true
+    if hit.visible.value && hitDelay - hitCooldown > 200 then
+      hit.visible = false
+
     if walkCollision(dummy) then
       if hitDelay - hitCooldown > 500 then
-        println("Dummy hit player")
+        println("Dummy hit player") //to show that its really ocnnecting
         Health  -= dummy.Damage
         skidSound.play()
         hitCooldown = hitDelay
@@ -175,7 +182,7 @@ object SimpleGame extends JFXApp3:
     stage = new JFXApp3.PrimaryStage:
       title = "Simple Game"
       scene = new Scene(800, 800):
-        content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,dummy.rectangle)
+        content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.rectangle)
 
         onKeyPressed = (event) =>
           keyInput += event.code
