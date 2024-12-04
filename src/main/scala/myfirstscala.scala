@@ -25,7 +25,9 @@ trait Hit :
 
 
 // initialize player
-class Player(initialX : Double, initialY: Double, health: Int) extends Hit:
+class Player(initialX : Double, initialY: Double) extends Hit:
+
+  var Health : Int = 10
   //temporary/perma? show player character
   val rectangle = new Rectangle():
     width = 25
@@ -117,7 +119,7 @@ class Player(initialX : Double, initialY: Double, health: Int) extends Hit:
         attackOn = false
 
   def healthBar () : Unit=
-    showHealth.width = (health/10) * 500
+    showHealth.width = (Health/10) * 500
 
   def checkHitCollision (dummy : Dummy , hitDelay: Long) : Unit =
     // to test if the damage collision works
@@ -128,13 +130,14 @@ class Player(initialX : Double, initialY: Double, health: Int) extends Hit:
     if walkCollision(dummy) then
       if hitDelay - hitCooldown > 500 then
         println("Dummy hit player")
-        health -= dummy.Damage
+        Health  -= dummy.Damage
         hitCooldown = hitDelay
 
 // initialize TestDummy
-class Dummy(initialX : Double, initialY: Double, health:Int) extends Hit :
+class Dummy(initialX : Double, initialY: Double) extends Hit :
   val Damage : Int = 1
-  
+  val Health : Int = 999
+
   val rectangle = new Rectangle():
     width = 25
     height = 55
@@ -146,8 +149,8 @@ class Dummy(initialX : Double, initialY: Double, health:Int) extends Hit :
 object SimpleGame extends JFXApp3:
   override def start(): Unit =
     val keyInput: mutable.Set[KeyCode] = mutable.Set()
-    val player = new Player(100,455,10)
-    val dummy = new Dummy(500,455,999)
+    val player = new Player(100,455)
+    val dummy = new Dummy(500,455)
 
     stage = new JFXApp3.PrimaryStage:
       title = "Simple Game"
