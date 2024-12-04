@@ -12,12 +12,16 @@ import scalafx.scene.text.{Text, Font}
 
 trait Hit :
   val rectangle : Rectangle
+  var hitCooldown : Long = 0L
 
-  def hitCollision(other : Hit): Boolean =
-    val thisBound =  rectangle.boundsInParent()
-    val otherBound = other.rectangle.boundsInParent()
-    thisBound.intersects(otherBound)
-
+  def hitCollision(other : Hit, attacking : Rectangle): Boolean =
+    val attack =  attacking.boundsInParent()
+    val receiver = other.rectangle.boundsInParent()
+    attack.intersects(receiver)
+  def walkCollision (other: Hit) : Boolean =
+    val player = rectangle.boundsInParent()
+    val enemy = other.rectangle.boundsInParent()
+    player.intersects(enemy)
 
 
 // initialize player
@@ -150,7 +154,18 @@ object SimpleGame extends JFXApp3:
       player.attackUpdate()
       player.healthBar()
 
-      if player.showAttack.visible.value && player.hitCollision(dummy) then
-        println("Hit")
+
+      val hitDelay = System.currentTimeMillis()
+
+      // to test if the damage collision works
+      if player.showAttack.visible.value && player.hitCollision(dummy, player.showAttack) then
+        if hitDelay - player.hitCooldown > 500 then
+          println("Hit")
+          player.hitCooldown = hitDelay
+      if player.walkCollision(dummy) then
+        if hitDelay - player.hitCooldown > 500 then
+          println("Dummy hit player")
+          player.hitCooldown = hitDelay
+          
     }
     timer.start()
