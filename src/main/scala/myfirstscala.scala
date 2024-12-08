@@ -27,7 +27,10 @@ trait Hit :
     val player = rectangle.boundsInParent()
     val enemy = other.rectangle.boundsInParent()
     player.intersects(enemy)
-
+  def dummyAACollision (other : Hit, attacking : AutoAttack) : Boolean =
+    val attack = attacking.shape.boundsInParent()
+    val receiver = other.rectangle.boundsInParent()
+    attack.intersects(receiver)
 
 // initialize player
 class Player(val initialX : Double, val initialY: Double) extends Hit:
@@ -139,7 +142,7 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
   lazy private val skidSound = new AudioClip(
     Paths.get("src/main/resources/audio/Metal pipe falling sound effect but its more violent.mp3").toUri.toString)
 
-  def checkHitCollision (dummy : Dummy , hitDelay: Long) : Unit =
+  def checkHitCollision (dummy : Dummy , hitDelay: Long, attackPellets: mutable.Buffer[AutoAttack]) : Unit =
     // to test if the damage collision works
     if showAttack.visible.value && hitCollision(dummy, showAttack) then
       if hitDelay - hitCooldown > 300 then
@@ -159,6 +162,15 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
         Health  -= dummy.Damage
         skidSound.play()
         hitCooldown = hitDelay
+
+    attackPellets.foreach { pellet =>
+        if dummyAACollision(this,pellet) then
+          if hitDelay - hitCooldown> 300 then
+            println("Player hit by dummy AA")
+            Health -= 1
+            skidSound.play()
+
+    }
 
 
 class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int):
@@ -204,7 +216,7 @@ class Dummy(val initialX : Double, val initialY: Double) extends Hit :
   var attackRange : Int = 300
   val attackInterval: Long = 1000
 
-
+  // val currentTime = System.currentTimeMillis() just leave it like this if you want it to happen once, if it works, it works
   def autoAttack(): Unit =
     val currentTime = System.currentTimeMillis()
     if currentTime - lastAttack > attackInterval then
@@ -216,6 +228,7 @@ class Dummy(val initialX : Double, val initialY: Double) extends Hit :
   def updateAA () : Unit =
     attackPellets.foreach(_.update())
     attackPellets = attackPellets.filter(attack => attack.xPos >= 0 && attack.xPos<=800)
+
 
 object SimpleGame extends JFXApp3:
   override def start(): Unit =
@@ -243,7 +256,7 @@ object SimpleGame extends JFXApp3:
       player.attackUpdate()
 
       val hitDelay = System.currentTimeMillis()
-      player.checkHitCollision(dummy, hitDelay)
+      player.checkHitCollision(dummy, hitDelay, dummy.attackPellets)
 
       dummy.autoAttack()
       dummy.updateAA()
