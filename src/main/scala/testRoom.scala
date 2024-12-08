@@ -59,7 +59,7 @@ object testRoom extends JFXApp3:
       dummy.updateAA()
 
       player.healthBar()
-      //dummy.movement()
+      dummy.movement()
 
       stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, dummy.rectangle) ++ dummy.attackPellets.map(_.shape)
       /*
@@ -73,6 +73,10 @@ object testRoom extends JFXApp3:
           println("Dummy hit player")
           player.hitCooldown = hitDelay
        */
+      // only for test range
+      if player.Health == 0 then
+        player.Health = 10
+
     }
     timer.start()
 

@@ -109,9 +109,6 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
 
   def healthBar () : Unit=
     showHealth.width = (Health/10) * 500
-    // only for test range
-    if Health == 0 then
-      Health = 10
 
   //TESTING PURPOSES
   lazy private val skidSound = new AudioClip(
