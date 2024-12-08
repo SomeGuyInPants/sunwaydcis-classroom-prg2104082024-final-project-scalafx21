@@ -160,6 +160,19 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
         hitCooldown = hitDelay
 
 
+class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int):
+  val shape = new Rectangle:
+    width = 10
+    height = 5
+    fill = Color.Yellow
+    x = xPos
+    y = yPos
+  val speed: Double = 5.0
+
+  def update(): Unit =
+    xPos += direction * speed
+    shape.x = xPos
+
 
 // initialize TestDummy
 class Dummy(val initialX : Double, val initialY: Double) extends Hit :
@@ -173,14 +186,6 @@ class Dummy(val initialX : Double, val initialY: Double) extends Hit :
     x = initialX
     y = initialY
 
-  val attackBeam = new Rectangle():
-    width = 150
-    height = 15
-    fill = Color.Green
-    x = initialX
-    y = initialY +25
-    visible = false
-
   var direction : Int = 2 // +ve = right, -ve = left
   var range : Int = 50
   var originalPos = initialX
@@ -192,25 +197,10 @@ class Dummy(val initialX : Double, val initialY: Double) extends Hit :
     else if rectangle.x() < originalPos - range then
       direction = 2
 
+  var attackPellets : mutable.Buffer[AutoAttack] = mutable.Buffer()
   var lastAttack : Long = 0L
   var attSpeed : Double = 5.0
   var attackRange : Int = 300
-
-  /*
-  def autoAttack(currentTime : Long) : Unit =
-    if currentTime - lastAttack > 1000 then //1 second delay between appearances
-      attackBeam.x = rectangle.x() + (if direction > 0 then rectangle.width() else - attackBeam.width())
-      attackBeam.y = rectangle.y() + rectangle.height() / 2 - attackBeam.height() / 2
-      attackBeam.visible = true
-      lastAttack = currentTime
-
-  def autoAttUpdate(currentTime:Long): Unit =
-    if attackBeam.visible.value then
-      attackBeam.x = attackBeam.x() + (if direction > 0 then attSpeed else -attSpeed)
-      if math.abs(attackBeam.x()-rectangle.x()) > attackRange then
-        attackBeam.visible = false
-
- */
 
 
 
@@ -223,7 +213,7 @@ object SimpleGame extends JFXApp3:
     stage = new JFXApp3.PrimaryStage:
       title = "Simple Game"
       scene = new Scene(800, 800):
-        content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.attackBeam,dummy.rectangle)
+        content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.rectangle) ++  dummy.attackPellets.map(_.shape)
 
         // remember to include reference
         onKeyPressed = (event) =>
@@ -241,11 +231,10 @@ object SimpleGame extends JFXApp3:
 
       val hitDelay = System.currentTimeMillis()
       player.checkHitCollision(dummy, hitDelay)
-      dummy.autoAttack(hitDelay)
-      dummy.autoAttUpdate(hitDelay)
+
 
       player.healthBar()
-      dummy.movement()
+      //dummy.movement()
 
       /*
       // to test if the damage collision works
