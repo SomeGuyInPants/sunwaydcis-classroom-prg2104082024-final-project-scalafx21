@@ -6,7 +6,8 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
-
+import scalafx.Includes.jfxScene2sfx
+import scalafx.scene.SceneIncludes.jfxScene2sfx
 import scala.collection.mutable
 import scalafx.scene.text.{Font, Text}
 import scalafx.scene.media.AudioClip
@@ -142,7 +143,7 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
     // to test if the damage collision works
     if showAttack.visible.value && hitCollision(dummy, showAttack) then
       if hitDelay - hitCooldown > 300 then
-        println("Hit") //to show that its really ocnnecting
+        println("Hit") //to show that its really connecting
         hitCooldown = hitDelay
 
         hit.x = dummy.rectangle.x() + dummy.rectangle.width()/2
@@ -162,9 +163,9 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
 
 class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int):
   val shape = new Rectangle:
-    width = 10
-    height = 5
-    fill = Color.Yellow
+    width = 55
+    height = 25
+    fill = Color.Black
     x = xPos
     y = yPos
   val speed: Double = 5.0
@@ -202,14 +203,15 @@ class Dummy(val initialX : Double, val initialY: Double) extends Hit :
   var attSpeed : Double = 5.0
   var attackRange : Int = 300
   val attackInterval: Long = 1000
-  val currentTime = System.currentTimeMillis()
+
 
   def autoAttack(): Unit =
-  if currentTime - lastAttack > attackInterval then
-    val attackDirection = if direction > 0 then 1 else -1
-    val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
-    attackPellets += newAttack
-    lastAttack = currentTime
+    val currentTime = System.currentTimeMillis()
+    if currentTime - lastAttack > attackInterval then
+      val attackDirection = if direction > 0 then 1 else -1
+      val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
+      attackPellets += newAttack
+      lastAttack = currentTime
 
   def updateAA () : Unit =
     attackPellets.foreach(_.update())
@@ -247,8 +249,9 @@ object SimpleGame extends JFXApp3:
       dummy.updateAA()
 
       player.healthBar()
-      //dummy.movement()
+      dummy.movement()
 
+      stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, dummy.rectangle) ++ dummy.attackPellets.map(_.shape)
       /*
       // to test if the damage collision works
       if player.showAttack.visible.value && player.hitCollision(dummy, player.showAttack) then
@@ -262,3 +265,4 @@ object SimpleGame extends JFXApp3:
        */
     }
     timer.start()
+
