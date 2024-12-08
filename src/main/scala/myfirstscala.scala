@@ -201,8 +201,19 @@ class Dummy(val initialX : Double, val initialY: Double) extends Hit :
   var lastAttack : Long = 0L
   var attSpeed : Double = 5.0
   var attackRange : Int = 300
+  val attackInterval: Long = 1000
+  val currentTime = System.currentTimeMillis()
 
+  def autoAttack(): Unit =
+  if currentTime - lastAttack > attackInterval then
+    val attackDirection = if direction > 0 then 1 else -1
+    val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
+    attackPellets += newAttack
+    lastAttack = currentTime
 
+  def updateAA () : Unit =
+    attackPellets.foreach(_.update())
+    attackPellets = attackPellets.filter(attack => attack.xPos >= 0 && attack.xPos<=800)
 
 object SimpleGame extends JFXApp3:
   override def start(): Unit =
@@ -232,6 +243,8 @@ object SimpleGame extends JFXApp3:
       val hitDelay = System.currentTimeMillis()
       player.checkHitCollision(dummy, hitDelay)
 
+      dummy.autoAttack()
+      dummy.updateAA()
 
       player.healthBar()
       //dummy.movement()
