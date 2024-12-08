@@ -3,13 +3,13 @@ import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.scene.Scene
 import scalafx.scene.input.KeyCode
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.{MoveTo, Rectangle}
+import scalafx.scene.shape.Rectangle
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
 
 import scala.collection.mutable
 import scalafx.scene.text.{Font, Text}
-import scalafx.scene.media.{AudioClip, Media, MediaPlayer, MediaView}
+import scalafx.scene.media.AudioClip
 
 import java.nio.file.Paths
 
@@ -29,7 +29,7 @@ trait Hit :
 
 
 // initialize player
-class Player(initialX : Double, initialY: Double) extends Hit:
+class Player(val initialX : Double, val initialY: Double) extends Hit:
 
   var Health : Double = 10.0
   //temporary/perma? show player character
@@ -162,7 +162,7 @@ class Player(initialX : Double, initialY: Double) extends Hit:
 
 
 // initialize TestDummy
-class Dummy(initialX : Double, initialY: Double) extends Hit :
+class Dummy(val initialX : Double, val initialY: Double) extends Hit :
   val Damage : Int = 1
   val Health : Int = 999
 
@@ -193,19 +193,24 @@ class Dummy(initialX : Double, initialY: Double) extends Hit :
       direction = 2
 
   var lastAttack : Long = 0L
+  var attSpeed : Double = 5.0
+  var attackRange : Int = 300
 
+  /*
   def autoAttack(currentTime : Long) : Unit =
-
-    if currentTime - lastAttack > 1000 then
+    if currentTime - lastAttack > 1000 then //1 second delay between appearances
       attackBeam.x = rectangle.x() + (if direction > 0 then rectangle.width() else - attackBeam.width())
       attackBeam.y = rectangle.y() + rectangle.height() / 2 - attackBeam.height() / 2
       attackBeam.visible = true
       lastAttack = currentTime
 
   def autoAttUpdate(currentTime:Long): Unit =
-    if attackBeam.visible.value && currentTime - lastAttack > 300 then
-      attackBeam.visible = false
+    if attackBeam.visible.value then
+      attackBeam.x = attackBeam.x() + (if direction > 0 then attSpeed else -attSpeed)
+      if math.abs(attackBeam.x()-rectangle.x()) > attackRange then
+        attackBeam.visible = false
 
+ */
 
 
 
@@ -220,12 +225,13 @@ object SimpleGame extends JFXApp3:
       scene = new Scene(800, 800):
         content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.attackBeam,dummy.rectangle)
 
+        // remember to include reference
         onKeyPressed = (event) =>
           keyInput += event.code
         onKeyReleased = (event) =>
           keyInput -= event.code
 
-    val timer = AnimationTimer { _ =>
+    val timer = AnimationTimer { _ => //remember to include reference
       if keyInput.contains(KeyCode.Left) then player.moveLeft()
       if keyInput.contains(KeyCode.Right) then player.moveRight()
       if keyInput.contains(KeyCode.Space) then player.jump()
