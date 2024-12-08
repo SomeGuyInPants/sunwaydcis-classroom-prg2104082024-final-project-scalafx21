@@ -9,7 +9,6 @@ import scalafx.scene.SceneIncludes.jfxScene2sfx
 import scala.collection.mutable
 
 
-
 trait Hit :
   val rectangle : Rectangle
   var hitCooldown : Long = 0L
