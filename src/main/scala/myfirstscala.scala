@@ -165,10 +165,11 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
 
     attackPellets.foreach { pellet =>
         if dummyAACollision(this,pellet) then
-          if hitDelay - hitCooldown> 300 then
+          if hitDelay - hitCooldown> 500 then
             println("Player hit by dummy AA")
             Health -= 1
             skidSound.play()
+            hitCooldown = hitDelay
 
     }
 
@@ -262,7 +263,7 @@ object SimpleGame extends JFXApp3:
       dummy.updateAA()
 
       player.healthBar()
-      dummy.movement()
+      //dummy.movement()
 
       stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, dummy.rectangle) ++ dummy.attackPellets.map(_.shape)
       /*
