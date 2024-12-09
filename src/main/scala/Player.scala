@@ -176,7 +176,7 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
             Health -= Damage
             //skidSound.play()
             hitCooldown = hitDelay
-      case beast : Beast =>
+      case beast : BeastAttack =>
         if bossBeastCollision(this, beast) then
           if hitDelay - hitCooldown > 500 then
             println("Player hit by Beast")

@@ -40,24 +40,38 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
         bossAttacks += newAttack
         attackPerformed = true
 
-
+  var cooldownTimer : Long = 0L
   def Beast() : Unit =
+
     if !attackPerformed then
       val attackDirection = checkDirection
-      val newAttack = new Beast(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
+      val newAttack = new BeastAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
       bossAttacks += newAttack
       attackPerformed = true
-      
 
+
+  var stickTime: Long = 0L
+  val proximityThreshold : Double = 300.0
+  val proximityDuration : Long = 6000
+
+  def checkDistance(player:Player) : Unit =
+    val distanceBetween = math.abs(player.rectangle.x() - rectangle.x())
+    if distanceBetween < proximityThreshold then
+      if stickTime == 0L then
+        stickTime = System.currentTimeMillis()
+      else if System.currentTimeMillis() - stickTime > proximityDuration then
+        Beast()
+    else
+      stickTime = 0L
   // to update the attacks in the loop
 
   def updateAtt() : Unit =
     bossAttacks.foreach:
       case attack : AutoAttack => attack.update()
-      case beast : Beast  => beast.update()
+      case beast : BeastAttack  => beast.update()
     bossAttacks = bossAttacks.filter:
       case attack : AutoAttack => attack.xPos >= 0 && attack.xPos <= 800
-      case beast : Beast => beast.shape.visible.value
+      case beast : BeastAttack => beast.shape.visible.value
 
   def resetAttack(): Unit =
     attackPerformed = false // resets to allow other attacks to occur

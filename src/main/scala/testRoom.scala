@@ -25,7 +25,7 @@ trait Hit :
     val attack = attacking.shape.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
     attack.intersects(receiver)
-  def bossBeastCollision (other : Hit, attacking : Beast) : Boolean =
+  def bossBeastCollision (other : Hit, attacking : BeastAttack) : Boolean =
     val attack = attacking.shape.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
     attack.intersects(receiver)
