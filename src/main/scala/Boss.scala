@@ -46,7 +46,10 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   // to update the attacks in the loop
   def updateAtt() : Unit =
     bossAttacks.foreach(_.update())
-    bossAttacks = bossAttacks.filter(attack => attack.xPos >= 0 && attack.xPos<=800)
+    bossAttacks = bossAttacks.filter :
+       case attack: AutoAttack =>
+         attack.shape.asInstanceOf[Rectangle].x >= 0 && attack.shape.asInstanceOf[Rectangle].x <= 800
+
 
   def resetAttack(): Unit =
     attackPerformed = false // resets to allow other attacks to occur
