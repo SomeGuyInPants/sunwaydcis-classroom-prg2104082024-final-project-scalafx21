@@ -40,7 +40,9 @@ object mainFight extends JFXApp3:
     stage = new JFXApp3.PrimaryStage:
         title = "Main Game"
         scene = new Scene(800, 800):
-          content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map(_.shape)
+          content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map:
+            case attack : AutoAttack => attack.shape
+            case beast : Beast => beast.shape
 
           onKeyPressed = (event) =>
             keyInput += event.code
@@ -72,7 +74,9 @@ object mainFight extends JFXApp3:
       if player.Health == 0 && !gameOver then
         gameOverScreen()
 
-      stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map(_.shape)
+      stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map:
+        case attack : AutoAttack => attack.shape
+        case beast : Beast => beast.shape
 
     }
     timer.start()

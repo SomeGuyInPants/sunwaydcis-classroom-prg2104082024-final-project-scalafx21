@@ -26,6 +26,7 @@ trait Hit :
     val attack = attacking.shape.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
     attack.intersects(receiver)
+    
 
 
 object testRoom extends JFXApp3:
