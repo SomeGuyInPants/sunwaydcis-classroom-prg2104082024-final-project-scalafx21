@@ -47,7 +47,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       val newAttack = new Beast(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
       bossAttacks += newAttack
       attackPerformed = true
-
+      
 
   // to update the attacks in the loop
 

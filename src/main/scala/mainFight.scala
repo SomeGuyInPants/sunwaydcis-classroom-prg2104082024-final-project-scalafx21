@@ -21,7 +21,7 @@ object mainFight extends JFXApp3:
     val keyInput: mutable.Set[KeyCode] = mutable.Set()
     val player = new Player(100,455)
     //player.Health = 0
-    val boss = new Boss(500,455)
+    val boss = new Boss(700,455)
 
     val gameOverText = new Text():
       text = ""

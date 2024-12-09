@@ -3,6 +3,7 @@ import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Ellipse
 
 
+// general attack frame for dummy and boss
 class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) :
   val shape = new Rectangle:
     width = 55
@@ -16,6 +17,7 @@ class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) :
     xPos += direction * speed
     shape.x = xPos
 
+// an attack that would only happen if the player is too close to the boss for too long
 class Beast (var xPos: Double, var yPos: Double, val direction: Int) :
   val shape = new Ellipse:
     centerX = xPos
