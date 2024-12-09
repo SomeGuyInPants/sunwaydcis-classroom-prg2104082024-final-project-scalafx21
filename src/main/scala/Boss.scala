@@ -19,7 +19,8 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     y = initialY
 
   var lastAttack: Long = 0L
-  var attackPerformed : Boolean = false // to track the activation of attacks
+  var demonFangPerformed : Boolean = false // to track the activation of attacks
+  var beastPerformed : Boolean = false
 
   val stageMidPoint: Double = 400 // Half of the stage size
 
@@ -34,22 +35,22 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
 
 
   def demonFang(): Unit = // reusing auto attack for one of the attacks
-    if !attackPerformed then
+    if !demonFangPerformed then
         val attackDirection = checkDirection
         val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
         bossAttacks += newAttack
-        attackPerformed = true
+        demonFangPerformed = true
 
 
   var prevBeast : Long = 0L
   val beastCooldown: Long = 20000L
   def Beast() : Unit =
     val cooldownTimer = System.currentTimeMillis()
-    if !attackPerformed && cooldownTimer - prevBeast > beastCooldown then
+    if !beastPerformed && cooldownTimer - prevBeast > beastCooldown then
       val attackDirection = checkDirection
       val newAttack = new BeastAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
       bossAttacks += newAttack
-      attackPerformed = true
+      beastPerformed = true
       prevBeast = cooldownTimer
 
 
@@ -64,7 +65,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
         stickTime = System.currentTimeMillis()
       else if System.currentTimeMillis() - stickTime > proximityDuration then
         Beast()
-        attackPerformed = false
+        beastPerformed = false
     else
       stickTime = 0L
   // to update the attacks in the loop
@@ -78,4 +79,5 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       case beast : BeastAttack => beast.shape.visible.value
 
   def resetAttack(): Unit =
-    attackPerformed = false // resets to allow other attacks to occur
+    demonFangPerformed = false
+    beastPerformed = false // resets to allow other attacks to occur
