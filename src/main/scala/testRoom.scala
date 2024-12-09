@@ -13,6 +13,7 @@ trait Hit :
   val rectangle : Rectangle
   var hitCooldown : Long = 0L
 
+
   def hitCollision(other : Hit, attacking : Rectangle): Boolean =
     val attack =  attacking.boundsInParent()
     val receiver = other.rectangle.boundsInParent()

@@ -147,6 +147,15 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
     }
 
   def checkBossHit(boss:Boss, hitDelay: Long, bossAttacks: mutable.Buffer[AutoAttack]): Unit =
+    if showAttack.visible.value && hitCollision(boss, showAttack) then
+      if hitDelay - hitCooldown > 300 then
+        println("Hit") //to show that its really connecting
+        hitCooldown = hitDelay
+
+        hit.x = boss.rectangle.x() + boss.rectangle.width() / 2
+        hit.y = boss.rectangle.y()
+        hit.visible = true
+    
     if walkCollision(boss) then
       if hitDelay - hitCooldown > 500 then
         println("Dummy hit player") //to show that its really ocnnecting
