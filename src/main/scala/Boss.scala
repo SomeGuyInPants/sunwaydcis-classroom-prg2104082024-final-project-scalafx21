@@ -5,9 +5,6 @@ import scalafx.scene.text.{Font, Text}
 import java.nio.file.Paths
 import scala.collection.mutable
 
-trait Attacks :
-  val ellipse : Shape
-  def update() : Unit
 
 class Boss(val initialX : Double, val initialY: Double) extends Hit :
   val health : Int = 50
@@ -26,7 +23,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   var attackPerformed : Boolean = false // to track the activation of attacks
 
   // a mutable set to hold each attack
-  var bossAttacks : mutable.Buffer[Attacks] = mutable.Buffer()
+  var bossAttacks: mutable.Buffer[AutoAttack] = mutable.Buffer()
 
   def attack1(): Unit = // reusing auto attack for one of the attacks
     if !attackPerformed then
@@ -35,22 +32,21 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
         bossAttacks += newAttack
         attackPerformed = true
 
+  /*
   def attBeast() : Unit =
     if !attackPerformed then
       val attackDirection = if direction > 0 then 1 else -1
       val newAttack = new Beast(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
       bossAttacks += newAttack
       attackPerformed = true
-
+  */
 
   // to update the attacks in the loop
+  
   def updateAtt() : Unit =
     bossAttacks.foreach(_.update())
-    bossAttacks = bossAttacks.filter :
-       case attack: AutoAttack =>
-         attack.shape.x.value >= 0 && attack.shape.x.value <= 800
-       case attack: Beast =>
-         attack.shape.centerX.value >= 0 && attack.shape.centerX.value <= 800
+    bossAttacks = bossAttacks.filter(attack => attack.xPos >= 0 && attack.xPos<=800)
+
 
   def resetAttack(): Unit =
     attackPerformed = false // resets to allow other attacks to occur

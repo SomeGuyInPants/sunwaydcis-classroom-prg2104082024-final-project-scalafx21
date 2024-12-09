@@ -2,7 +2,7 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Ellipse
 
-class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) extends Attacks:
+class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) :
   val shape = new Rectangle:
     width = 55
     height = 25
@@ -15,7 +15,7 @@ class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) extends
     xPos += direction * speed
     shape.x = xPos
 
-class Beast (var xPos: Double, var yPos: Double, val direction: Int) extends Attacks:
+class Beast (var xPos: Double, var yPos: Double, val direction: Int) :
   val shape = new Ellipse:
     centerX = xPos
     centerY = yPos
