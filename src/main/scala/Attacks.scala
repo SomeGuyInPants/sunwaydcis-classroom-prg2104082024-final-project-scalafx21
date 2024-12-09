@@ -19,7 +19,6 @@ class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) :
 
 // an attack that would only happen if the player is too close to the boss for too long
 class BeastAttack (var xPos: Double, var yPos: Double, val direction: Int) :
-  val cooldown = 30 //attack cooldown time
   val shape = new Ellipse:
     centerX = xPos
     centerY = yPos

@@ -64,6 +64,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
         stickTime = System.currentTimeMillis()
       else if System.currentTimeMillis() - stickTime > proximityDuration then
         Beast()
+        attackPerformed = false
     else
       stickTime = 0L
   // to update the attacks in the loop
