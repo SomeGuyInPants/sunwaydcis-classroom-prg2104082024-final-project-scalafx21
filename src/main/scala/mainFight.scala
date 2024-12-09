@@ -31,10 +31,15 @@ object mainFight extends JFXApp3:
       fill = Color.Red
 
 
-    def gameOverScreen () : Unit =
-      gameOver = true
-      gameOverText.text = "Game Over"
-      timer.stop()
+    def gameOverScreen(): Unit =
+      if player.Health == 0 then
+        gameOver = true
+        gameOverText.text = "Game Over"
+        timer.stop()
+      if boss.health == 0 then
+        gameOver = true
+        gameOverText.text = "Victory!"
+        timer.stop()
 
 
     stage = new JFXApp3.PrimaryStage:
@@ -72,9 +77,13 @@ object mainFight extends JFXApp3:
       // Reset the boss's attack for testing purposes
       if keyInput.contains(KeyCode.R) then boss.resetAttack()
 
+      if !gameOver then
+        if player.Health == 0 || boss.health == 0 then
+          gameOverScreen()
+      /*
       if player.Health == 0 && !gameOver then
         gameOverScreen()
-
+      */
       stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map:
         case attack : AutoAttack => attack.shape
         case beast : Beast => beast.shape
