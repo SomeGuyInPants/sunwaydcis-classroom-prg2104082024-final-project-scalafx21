@@ -59,12 +59,15 @@ object mainFight extends JFXApp3:
       player.jumpUpdate()
       player.attackUpdate()
       player.healthBar()
+
       val hitDelay = System.currentTimeMillis()
+      player.checkBossHit(boss, hitDelay, boss.bossAttacks)
 
       boss.attack1()
       boss.updateAtt()
 
       // Reset the boss's attack for testing purposes
+      if keyInput.contains(KeyCode.R) then boss.resetAttack()
 
       if player.Health == 0 && !gameOver then
         gameOverScreen()

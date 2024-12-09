@@ -145,7 +145,21 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
           //skidSound.play()
           hitCooldown = hitDelay
     }
-    
-  
-  
+
+  def checkBossHit(boss:Boss, hitDelay: Long, bossAttacks: mutable.Buffer[AutoAttack]): Unit =
+    if walkCollision(boss) then
+      if hitDelay - hitCooldown > 500 then
+        println("Dummy hit player") //to show that its really ocnnecting
+        Health -= boss.damage
+        //skidSound.play()
+        hitCooldown = hitDelay
+
+    bossAttacks.foreach { pellet =>
+      if dummyAACollision(this, pellet) then
+        if hitDelay - hitCooldown > 500 then
+          println("Player hit by dummy AA")
+          Health -= 1
+          //skidSound.play()
+          hitCooldown = hitDelay
+    }
     

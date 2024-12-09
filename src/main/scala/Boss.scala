@@ -6,8 +6,9 @@ import java.nio.file.Paths
 import scala.collection.mutable
 
 
-class Boss(val initialX : Double, val initialY: Double) :
-  var health : Double = 50
+class Boss(val initialX : Double, val initialY: Double) extends Hit :
+  val health : Int = 50
+  val damage : Int = 1
 
   val rectangle = new Rectangle():
     width = 25
