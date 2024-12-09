@@ -9,8 +9,9 @@ import scala.collection.mutable
 
 // initialize player
 class Player(val initialX : Double, val initialY: Double) extends Hit:
-
   var Health : Double = 10.0
+  var Damage : Double = 1
+  
   //a simple player model
   val rectangle = new Rectangle():
     width = 25
@@ -151,14 +152,14 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
       if hitDelay - hitCooldown > 300 then
         println("Hit") //to show that its really connecting
         hitCooldown = hitDelay
-
+        boss.health -= 1
         hit.x = boss.rectangle.x() + boss.rectangle.width() / 2
         hit.y = boss.rectangle.y()
         hit.visible = true
-    
+
     if walkCollision(boss) then
       if hitDelay - hitCooldown > 500 then
-        println("Dummy hit player") //to show that its really ocnnecting
+        println("Player Hit by Boss") //to show that its really ocnnecting
         Health -= boss.damage
         //skidSound.play()
         hitCooldown = hitDelay
@@ -167,11 +168,28 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
       case pellet: AutoAttack =>
         if dummyAACollision(this, pellet) then
           if hitDelay - hitCooldown > 500 then
-            println("Player hit by dummy AA")
+            println("Player hit by Demon Fang")
+            Health -= Damage
+            //skidSound.play()
+            hitCooldown = hitDelay
+      case beast : Beast =>
+        if bossBeastCollision(this, beast) then
+          if hitDelay - hitCooldown > 500 then
+            println("Player hit by Beast")
             Health -= 1
             //skidSound.play()
             hitCooldown = hitDelay
-      case _ => // Do nothing for other types
+      case _ => // do nothing
     }
 
+/*
+bossAttacks.foreach { pellet =>
+  if dummyAACollision(this, pellet) then
+    if hitDelay - hitCooldown > 500 then
+      println("Player hit by dummy AA")
+      Health -= 1
+      //skidSound.play()
+      hitCooldown = hitDelay
+}
+    */
     

@@ -65,7 +65,8 @@ object mainFight extends JFXApp3:
       val hitDelay = System.currentTimeMillis()
       player.checkBossHit(boss, hitDelay, boss.bossAttacks)
 
-      boss.attack1()
+      //boss.demonFang()
+      boss.Beast()
       boss.updateAtt()
 
       // Reset the boss's attack for testing purposes

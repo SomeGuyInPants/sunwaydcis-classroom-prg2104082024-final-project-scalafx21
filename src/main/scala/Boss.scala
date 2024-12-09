@@ -7,8 +7,8 @@ import scala.collection.mutable
 
 
 class Boss(val initialX : Double, val initialY: Double) extends Hit :
-  val health : Int = 50
-  val damage : Int = 1
+  var health : Double = 1.0
+  val damage : Double = 1
 
   val rectangle = new Rectangle():
     width = 25
@@ -25,7 +25,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   // a mutable set to hold each attack
   var bossAttacks: mutable.Buffer[Any] = mutable.Buffer()
 
-  def attack1(): Unit = // reusing auto attack for one of the attacks
+  def demonFang(): Unit = // reusing auto attack for one of the attacks
     if !attackPerformed then
         val attackDirection = if direction > 0 then 1 else -1
         val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
@@ -33,7 +33,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
         attackPerformed = true
 
 
-  def attBeast() : Unit =
+  def Beast() : Unit =
     if !attackPerformed then
       val attackDirection = if direction > 0 then 1 else -1
       val newAttack = new Beast(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)

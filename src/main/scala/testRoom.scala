@@ -12,8 +12,7 @@ import scala.collection.mutable
 trait Hit :
   val rectangle : Rectangle
   var hitCooldown : Long = 0L
-
-
+  
   def hitCollision(other : Hit, attacking : Rectangle): Boolean =
     val attack =  attacking.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
@@ -26,7 +25,10 @@ trait Hit :
     val attack = attacking.shape.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
     attack.intersects(receiver)
-    
+  def bossBeastCollision (other : Hit, attacking : Beast) : Boolean =
+    val attack = attacking.shape.boundsInParent()
+    val receiver = other.rectangle.boundsInParent()
+    attack.intersects(receiver)
 
 
 object testRoom extends JFXApp3:

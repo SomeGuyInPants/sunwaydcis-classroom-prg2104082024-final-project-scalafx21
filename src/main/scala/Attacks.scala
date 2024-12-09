@@ -2,6 +2,7 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Ellipse
 
+
 class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) :
   val shape = new Rectangle:
     width = 55
@@ -21,7 +22,7 @@ class Beast (var xPos: Double, var yPos: Double, val direction: Int) :
     centerY = yPos
     fill = Color.LightCyan
     radiusX = 25
-    radiusY = 15
+    radiusY = 55
   val speed: Double = 5.0
 
   def update(): Unit =
