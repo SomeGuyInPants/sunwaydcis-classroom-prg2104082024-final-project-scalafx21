@@ -33,3 +33,5 @@ class Beast (var xPos: Double, var yPos: Double, val direction: Int) :
     if Math.abs(xPos - initialX) < maxDistance then
       xPos += direction * speed
       shape.centerX = xPos
+    else
+      shape.visible = false

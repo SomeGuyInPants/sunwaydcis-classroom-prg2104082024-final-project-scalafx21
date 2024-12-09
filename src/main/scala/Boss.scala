@@ -57,7 +57,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       case beast : Beast  => beast.update()
     bossAttacks = bossAttacks.filter:
       case attack : AutoAttack => attack.xPos >= 0 && attack.xPos <= 800
-      case beast : Beast => beast.xPos >= 0 && beast.xPos <= 800
+      case beast : Beast => beast.shape.visible.value
 
   def resetAttack(): Unit =
     attackPerformed = false // resets to allow other attacks to occur
