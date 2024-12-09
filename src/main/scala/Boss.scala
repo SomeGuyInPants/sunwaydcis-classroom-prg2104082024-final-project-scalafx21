@@ -42,7 +42,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
 
 
   var prevBeast : Long = 0L
-  val beastCooldown: Long = 5000L
+  val beastCooldown: Long = 20000L
   def Beast() : Unit =
     val cooldownTimer = System.currentTimeMillis()
     if !attackPerformed && cooldownTimer - prevBeast > beastCooldown then
