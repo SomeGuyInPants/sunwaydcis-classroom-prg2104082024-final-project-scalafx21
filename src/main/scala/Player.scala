@@ -157,6 +157,9 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
         hit.y = boss.rectangle.y()
         hit.visible = true
 
+    if hit.visible.value && hitDelay - hitCooldown > 200 then
+      hit.visible = false
+      
     if walkCollision(boss) then
       if hitDelay - hitCooldown > 500 then
         println("Player Hit by Boss") //to show that its really ocnnecting

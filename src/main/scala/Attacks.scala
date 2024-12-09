@@ -23,8 +23,13 @@ class Beast (var xPos: Double, var yPos: Double, val direction: Int) :
     fill = Color.LightCyan
     radiusX = 25
     radiusY = 55
+
   val speed: Double = 5.0
 
+  val maxDistance: Double = speed * 8 // speed x travel time
+  val initialX : Double = xPos
+
   def update(): Unit =
-    xPos += direction * speed
-    shape.centerX = xPos
+    if Math.abs(xPos - initialX) < maxDistance then
+      xPos += direction * speed
+      shape.centerX = xPos
