@@ -19,8 +19,6 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     y = initialY
 
   var lastAttack: Long = 0L
-  val attackCooldown: Long = 3000
-  //var direction : Int = 2 // +ve = right, -ve = left
   var attackPerformed : Boolean = false // to track the activation of attacks
 
   val stageMidPoint: Double = 400 // Half of the stage size
@@ -33,6 +31,8 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   // a mutable set to hold each attack
   var bossAttacks: mutable.Buffer[Any] = mutable.Buffer()
 
+
+
   def demonFang(): Unit = // reusing auto attack for one of the attacks
     if !attackPerformed then
         val attackDirection = checkDirection
@@ -40,14 +40,17 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
         bossAttacks += newAttack
         attackPerformed = true
 
-  var cooldownTimer : Long = 0L
-  def Beast() : Unit =
 
-    if !attackPerformed then
+  var prevBeast : Long = 0L
+  val beastCooldown: Long = 5000L
+  def Beast() : Unit =
+    val cooldownTimer = System.currentTimeMillis()
+    if !attackPerformed && cooldownTimer - prevBeast > beastCooldown then
       val attackDirection = checkDirection
       val newAttack = new BeastAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
       bossAttacks += newAttack
       attackPerformed = true
+      prevBeast = cooldownTimer
 
 
   var stickTime: Long = 0L
