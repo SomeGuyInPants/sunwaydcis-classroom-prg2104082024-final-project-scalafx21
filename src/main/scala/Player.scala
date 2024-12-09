@@ -2,9 +2,10 @@ import scalafx.scene.media.AudioClip
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.text.{Font, Text}
-
 import java.nio.file.Paths
 import scala.collection.mutable
+
+
 
 // initialize player
 class Player(val initialX : Double, val initialY: Double) extends Hit:
@@ -113,7 +114,8 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
   //TESTING PURPOSES
   lazy private val skidSound = new AudioClip(
     Paths.get("src/main/resources/audio/Metal pipe falling sound effect but its more violent.mp3").toUri.toString)
-
+  
+  // for hitCollision for test Room
   def checkHitCollision (dummy : Dummy , hitDelay: Long, attackPellets: mutable.Buffer[AutoAttack]) : Unit =
     // to test if the damage collision works
     if showAttack.visible.value && hitCollision(dummy, showAttack) then
@@ -124,7 +126,7 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
         hit.x = dummy.rectangle.x() + dummy.rectangle.width()/2
         hit.y = dummy.rectangle.y()
         hit.visible = true
-
+    
     if hit.visible.value && hitDelay - hitCooldown > 200 then
       hit.visible = false
 
@@ -132,15 +134,18 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
       if hitDelay - hitCooldown > 500 then
         println("Dummy hit player") //to show that its really ocnnecting
         Health  -= dummy.Damage
-        skidSound.play()
+        //skidSound.play()
         hitCooldown = hitDelay
-
+    
     attackPellets.foreach { pellet =>
       if dummyAACollision(this,pellet) then
         if hitDelay - hitCooldown> 500 then
           println("Player hit by dummy AA")
           Health -= 1
-          skidSound.play()
+          //skidSound.play()
           hitCooldown = hitDelay
-
     }
+    
+  
+  
+    

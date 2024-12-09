@@ -21,6 +21,7 @@ object mainFight extends JFXApp3:
     val keyInput: mutable.Set[KeyCode] = mutable.Set()
     val player = new Player(100,455)
     //player.Health = 0
+    val boss = new Boss(500,455)
 
     val gameOverText = new Text():
       text = ""
@@ -39,12 +40,14 @@ object mainFight extends JFXApp3:
     stage = new JFXApp3.PrimaryStage:
         title = "Main Game"
         scene = new Scene(800, 800):
-          content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit, gameOverText)
+          content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map(_.shape)
 
           onKeyPressed = (event) =>
             keyInput += event.code
+
           onKeyReleased = (event) =>
             keyInput -= event.code
+
 
 
 
@@ -55,15 +58,18 @@ object mainFight extends JFXApp3:
       if keyInput.contains(KeyCode.Z) then player.attack()
       player.jumpUpdate()
       player.attackUpdate()
-
+      player.healthBar()
       val hitDelay = System.currentTimeMillis()
 
-      player.healthBar()
+      boss.attack1()
+      boss.updateAtt()
+
+      // Reset the boss's attack for testing purposes
 
       if player.Health == 0 && !gameOver then
         gameOverScreen()
 
-      stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, gameOverText)
+      stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map(_.shape)
 
     }
     timer.start()

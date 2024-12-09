@@ -62,17 +62,7 @@ object testRoom extends JFXApp3:
       dummy.movement()
 
       stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, dummy.rectangle) ++ dummy.attackPellets.map(_.shape)
-      /*
-      // to test if the damage collision works
-      if player.showAttack.visible.value && player.hitCollision(dummy, player.showAttack) then
-        if hitDelay - player.hitCooldown > 300 then
-          println("Hit")
-          player.hitCooldown = hitDelay
-      if player.walkCollision(dummy) then
-        if hitDelay - player.hitCooldown > 500 then
-          println("Dummy hit player")
-          player.hitCooldown = hitDelay
-       */
+
       // only for test range
       if player.Health == 0 then
         player.Health = 10

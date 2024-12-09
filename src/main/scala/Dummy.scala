@@ -43,6 +43,7 @@ class Dummy(val initialX : Double, val initialY: Double) extends Hit :
       attackPellets += newAttack
       lastAttack = currentTime
 
+  // to update the attacks in the loop
   def updateAA () : Unit =
     attackPellets.foreach(_.update())
     attackPellets = attackPellets.filter(attack => attack.xPos >= 0 && attack.xPos<=800)
