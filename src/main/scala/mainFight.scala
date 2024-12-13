@@ -48,6 +48,8 @@ object mainFight extends JFXApp3:
           content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map:
             case attack : AutoAttack => attack.shape
             case beast : BeastAttack => beast.shape
+            case dragonSwarm : DragonSwarmAttack => dragonSwarm.shape
+
 
           onKeyPressed = (event) =>
             keyInput += event.code
@@ -71,8 +73,8 @@ object mainFight extends JFXApp3:
       player.checkBossHit(boss, hitDelay, boss.bossAttacks)
 
       //boss.demonFang()
-      boss.checkDistance(player) // used to check when Beast should activate
-
+      //boss.checkDistance(player) // used to check when Beast should activate
+      boss.dragonSwarm()
       boss.updateAtt()
 
       // Reset the boss's attack for testing purposes
@@ -88,6 +90,7 @@ object mainFight extends JFXApp3:
       stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map:
         case attack : AutoAttack => attack.shape
         case beast : BeastAttack => beast.shape
+        case dragonSwarm: DragonSwarmAttack => dragonSwarm.shape
 
     }
     timer.start()

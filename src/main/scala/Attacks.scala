@@ -37,20 +37,20 @@ class BeastAttack (var xPos: Double, var yPos: Double, val direction: Int) :
       shape.centerX = xPos
     else
       shape.visible = false
-      
+
 class DragonSwarmAttack (var xPos: Double, var yPos: Double, val direction: Int) :
     val shape = new Ellipse:
       centerX = xPos
       centerY = yPos
       fill = Color.LightCyan
       radiusX = 25
-      radiusY = 55
-    
+      radiusY = 10
+
     val speed: Double = 5.0
-    
+
     val maxDistance: Double = speed * 8 // speed x travel time
     val initialX: Double = xPos
-    
+
     def update(): Unit =
       if Math.abs(xPos - initialX) < maxDistance then
         xPos += direction * speed

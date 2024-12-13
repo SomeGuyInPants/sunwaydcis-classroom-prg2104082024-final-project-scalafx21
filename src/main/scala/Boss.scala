@@ -20,7 +20,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
 
   var lastAttack: Long = 0L
   // to track the activation of attacks
-  var demonFangPerformed : Boolean = false 
+  var demonFangPerformed : Boolean = false
   var beastPerformed : Boolean = false
   var dragonSwarmPerformed : Boolean = false
 
@@ -72,22 +72,26 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     else
       stickTime = 0L
   // to update the attacks in the loop
-  
-  def DragonSwarm() : Unit =
-    if !dragonSwarmPerformed then 
+
+  // close ranged attack, boss will dash close to the player and do a 3-swing combo then dash towards the opposite end(?)
+  def dragonSwarm() : Unit =
+    if !dragonSwarmPerformed then
       val attackDirection = checkDirection
-      val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
+      val newAttack = new DragonSwarmAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
       bossAttacks += newAttack
       dragonSwarmPerformed = true
-  
+
   def updateAtt() : Unit =
     bossAttacks.foreach:
       case attack : AutoAttack => attack.update()
       case beast : BeastAttack  => beast.update()
+      case dragonSwarmAttack: DragonSwarmAttack => dragonSwarmAttack.update()
     bossAttacks = bossAttacks.filter:
       case attack : AutoAttack => attack.xPos >= 0 && attack.xPos <= 800
       case beast : BeastAttack => beast.shape.visible.value
+      case dragonSwarmAttack: DragonSwarmAttack => dragonSwarmAttack.xPos >= 0 && dragonSwarmAttack.xPos <= 800
 
   def resetAttack(): Unit =
     demonFangPerformed = false
-    beastPerformed = false // resets to allow other attacks to occur
+    beastPerformed = false 
+    dragonSwarmPerformed = false // resets to allow other attacks to occur
