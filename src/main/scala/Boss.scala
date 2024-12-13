@@ -19,8 +19,10 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     y = initialY
 
   var lastAttack: Long = 0L
-  var demonFangPerformed : Boolean = false // to track the activation of attacks
+  // to track the activation of attacks
+  var demonFangPerformed : Boolean = false 
   var beastPerformed : Boolean = false
+  var dragonSwarmPerformed : Boolean = false
 
   val stageMidPoint: Double = 400 // Half of the stage size
 
@@ -33,8 +35,8 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   var bossAttacks: mutable.Buffer[Any] = mutable.Buffer()
 
 
-
-  def demonFang(): Unit = // reusing auto attack for one of the attacks
+  //ranged attack
+  def demonFang(): Unit = // reusing auto attack of the dummy
     if !demonFangPerformed then
         val attackDirection = checkDirection
         val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
@@ -58,6 +60,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   val proximityThreshold : Double = 300.0
   val proximityDuration : Long = 6000
 
+  // method to check when Beast should activate
   def checkDistance(player:Player) : Unit =
     val distanceBetween = math.abs(player.rectangle.x() - rectangle.x())
     if distanceBetween < proximityThreshold then
@@ -69,7 +72,14 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     else
       stickTime = 0L
   // to update the attacks in the loop
-
+  
+  def DragonSwarm() : Unit =
+    if !dragonSwarmPerformed then 
+      val attackDirection = checkDirection
+      val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
+      bossAttacks += newAttack
+      dragonSwarmPerformed = true
+  
   def updateAtt() : Unit =
     bossAttacks.foreach:
       case attack : AutoAttack => attack.update()
