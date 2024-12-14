@@ -47,7 +47,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
 
   var prevBeast : Long = 0L
   val beastCooldown: Long = 20000L
-  
+
   def Beast(player:Player) : Unit =
     val cooldownTimer = System.currentTimeMillis()
     if !beastPerformed && cooldownTimer - prevBeast > beastCooldown then
@@ -93,22 +93,37 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
         else
           dragonSwarmPerformed = true
           prevDS = currentTime
+
+  // to control attack state
+  var attacking : Boolean = false
+  var returning : Boolean = false
+
    // create a dash feature for the boss before dragon swarm happens
   def dashToPlayer(player:Player) : Unit =
     val initialPos = rectangle.x()
     val mvmSpeed = 20
-    val stop = 50 // the distance between boss and plaer t
+    val stop = 50 // the distance between boss and player
     val direction = if player.rectangle.x() > rectangle.x() then 1 else -1
 
-    if math.abs(player.rectangle.x() - rectangle.x()) > stop then
-      rectangle.x = rectangle.x() + direction * mvmSpeed
+    if !attacking then
+      if math.abs(player.rectangle.x() - rectangle.x()) > stop then
+        rectangle.x = rectangle.x() + direction * mvmSpeed
 
     // to check if its close enough to activate attack
     if math.abs(player.rectangle.x() - rectangle.x()) <= stop then
+      attacking = true
       dragonSwarm(player)
-  
+
+    if attacking && !returning then
+      returning = true
+
+    if returning then
+      if direction == 1 then
+        rectangle.x = rectangle.x() + 700 * mvmSpeed 
+      else
+        rectangle.x = rectangle.x() - 700 * mvmSpeed
   end dashToPlayer
-   
+
 
 
 
