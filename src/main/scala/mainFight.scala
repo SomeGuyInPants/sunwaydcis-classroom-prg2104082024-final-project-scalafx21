@@ -74,7 +74,8 @@ object mainFight extends JFXApp3:
 
       //boss.demonFang()
       //boss.checkDistance(player) // used to check when Beast should activate
-      boss.dragonSwarm()
+      //boss.dragonSwarm()
+      boss.dashToPlayer(player)
       boss.updateAtt()
 
       // Reset the boss's attack for testing purposes

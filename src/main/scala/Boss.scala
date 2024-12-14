@@ -27,30 +27,32 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
 
   val stageMidPoint: Double = 400 // Half of the stage size
 
-  def checkDirection : Int =
-    if rectangle.x() + rectangle.width() / 2 > stageMidPoint then
-      -1
-    else
+  def checkDirection(player: Player): Int =
+    if player.rectangle.x() > rectangle.x() then
       1
+    else
+      -1
+
   // a mutable set to hold each attack
   var bossAttacks: mutable.Buffer[Any] = mutable.Buffer()
 
   //ranged attack
-  def demonFang(): Unit = // reusing auto attack of the dummy
+  def demonFang(player:Player): Unit = // reusing auto attack of the dummy
     if !demonFangPerformed then
-        val attackDirection = checkDirection
-        val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
+        val attackDirection = checkDirection(player)
+        val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
         bossAttacks += newAttack
         demonFangPerformed = true
 
 
   var prevBeast : Long = 0L
   val beastCooldown: Long = 20000L
-  def Beast() : Unit =
+  
+  def Beast(player:Player) : Unit =
     val cooldownTimer = System.currentTimeMillis()
     if !beastPerformed && cooldownTimer - prevBeast > beastCooldown then
-      val attackDirection = checkDirection
-      val newAttack = new BeastAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
+      val attackDirection = checkDirection(player)
+      val newAttack = new BeastAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
       bossAttacks += newAttack
       beastPerformed = true
       prevBeast = cooldownTimer
@@ -67,7 +69,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       if stickTime == 0L then
         stickTime = System.currentTimeMillis()
       else if System.currentTimeMillis() - stickTime > proximityDuration then
-        Beast()
+        Beast(player)
         beastPerformed = false
     else
       stickTime = 0L
@@ -78,21 +80,35 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   val dsCooldown : Long = 500L
   var dragonSwarmHitCount : Int = 0 // new
 
-  def dragonSwarm() : Unit =
+  def dragonSwarm(player:Player) : Unit =
     val currentTime = System.currentTimeMillis()
     if !dragonSwarmPerformed && currentTime - prevDS > dsCooldown then
       if currentTime - prevDS > dsInterval then
         if dragonSwarmHitCount < 3 then
-          val attackDirection = checkDirection
+          val attackDirection = checkDirection(player)
           val newAttack = new DragonSwarmAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
           bossAttacks += newAttack
           prevDS = currentTime
           dragonSwarmHitCount += 1
         else
           dragonSwarmPerformed = true
+          prevDS = currentTime
    // create a dash feature for the boss before dragon swarm happens
+  def dashToPlayer(player:Player) : Unit =
+    val initialPos = rectangle.x()
+    val mvmSpeed = 20
+    val stop = 50 // the distance between boss and plaer t
+    val direction = if player.rectangle.x() > rectangle.x() then 1 else -1
 
+    if math.abs(player.rectangle.x() - rectangle.x()) > stop then
+      rectangle.x = rectangle.x() + direction * mvmSpeed
 
+    // to check if its close enough to activate attack
+    if math.abs(player.rectangle.x() - rectangle.x()) <= stop then
+      dragonSwarm(player)
+  
+  end dashToPlayer
+   
 
 
 
