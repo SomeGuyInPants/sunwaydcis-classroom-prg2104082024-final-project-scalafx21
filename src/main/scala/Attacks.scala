@@ -1,6 +1,7 @@
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Ellipse
+import scalafx.scene.shape.{Path, MoveTo, LineTo}
 
 
 // general attack frame for dummy and boss
@@ -27,10 +28,9 @@ class BeastAttack (var xPos: Double, var yPos: Double, val direction: Int) :
     radiusY = 55
 
   val speed: Double = 5.0
-
   val maxDistance: Double = speed * 8 // speed x travel time
   val initialX : Double = xPos
-
+  
   def update(): Unit =
     if Math.abs(xPos - initialX) < maxDistance then
       xPos += direction * speed
@@ -47,7 +47,7 @@ class DragonSwarmAttack (var xPos: Double, var yPos: Double, val direction: Int)
       radiusY = 10
 
     val speed: Double = 5.0
-
+    var hitCount: Int = 0 //new 
     val maxDistance: Double = speed * 8 // speed x travel time
     val initialX: Double = xPos
 
@@ -57,3 +57,10 @@ class DragonSwarmAttack (var xPos: Double, var yPos: Double, val direction: Int)
         shape.centerX = xPos
       else
         shape.visible = false
+    
+    // new
+    def reset() : Unit =
+      xPos = initialX
+      shape.centerX = xPos
+      shape.visible = true
+      hitCount = 0

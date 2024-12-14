@@ -30,6 +30,11 @@ trait Hit :
     val receiver = other.rectangle.boundsInParent()
     attack.intersects(receiver)
 
+  def bossDSCollision (other: Hit, attacking: DragonSwarmAttack): Boolean =
+    val attack = attacking.shape.boundsInParent()
+    val receiver = other.rectangle.boundsInParent()
+    attack.intersects(receiver)
+
 
 object testRoom extends JFXApp3:
   override def start(): Unit =

@@ -147,7 +147,7 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
           hitCooldown = hitDelay
     }
 
-
+  // main fight scene
   def checkBossHit(boss:Boss, hitDelay: Long, bossAttacks: mutable.Buffer[Any]): Unit =
     if showAttack.visible.value && hitCollision(boss, showAttack) then
       if hitDelay - hitCooldown > 300 then
@@ -188,7 +188,20 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
               1 else
               -1
             rectangle.x = rectangle.x() + checkDirection * 550 // to calculate how far the player is pushed from the original position
-
+      
+      case dragonSwarm: DragonSwarmAttack =>
+        if bossDSCollision(this,dragonSwarm) then
+          if hitDelay - hitCooldown > 500 then
+            println("Player hit by Dragon Swarm")
+            Health -= 1
+            //skidSound.play()
+            hitCooldown = hitDelay
+    
+            val checkDirection = if boss.rectangle.x() < rectangle.x() then
+              1 else
+              -1
+              
+       
       case _ => // do nothing
     }
 
