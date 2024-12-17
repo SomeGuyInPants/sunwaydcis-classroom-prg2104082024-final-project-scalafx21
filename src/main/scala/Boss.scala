@@ -33,6 +33,21 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     else
       -1
 
+  def stayPut(duration:Long) : Unit =
+    val move = System.currentTimeMillis() + duration
+    while (System.currentTimeMillis() < move){
+      // does nothing while waiting
+      rectangle.x = rectangle.x()
+    }
+  def returnPosition () : Unit =
+    val mvmSpeed = 20
+    val targetPosition : Double = 700
+
+    while (math.abs(rectangle.x()-targetPosition)>mvmSpeed){
+      val returnDirection = if rectangle.x() > targetPosition then 1 else -1
+      rectangle.x = rectangle.x() + returnDirection * mvmSpeed
+    }
+
   // a mutable set to hold each attack
   var bossAttacks: mutable.Buffer[Any] = mutable.Buffer()
 
@@ -77,52 +92,66 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   // to update the attacks in the loop
   var prevDS : Long = 0L
   val dsInterval : Long = 600L
-  val dsCooldown : Long = 500L
   var dragonSwarmHitCount : Int = 0 // new
 
-  def dragonSwarm(player:Player) : Unit =
+  def dragonSwarm(player: Player): Unit =
     val currentTime = System.currentTimeMillis()
-    if !dragonSwarmPerformed && currentTime - prevDS > dsCooldown then
-      if currentTime - prevDS > dsInterval then
-        if dragonSwarmHitCount < 3 then
-          val attackDirection = checkDirection(player)
-          val newAttack = new DragonSwarmAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
-          bossAttacks += newAttack
-          prevDS = currentTime
-          dragonSwarmHitCount += 1
-        else
-          dragonSwarmPerformed = true
-          prevDS = currentTime
+    if currentTime - prevDS > dsInterval then
+      if dragonSwarmHitCount < 3 then
+        val attackDirection = checkDirection(player)
+        val newAttack = new DragonSwarmAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
+        bossAttacks += newAttack
+        prevDS = currentTime
+        dragonSwarmHitCount += 1
+      else
+        dragonSwarmPerformed = true
+        dragonSwarmHitCount = 0 // Reset hit count for the next sequence
+        prevDS = currentTime
+        stayPut(5000)
 
   // to control attack state
-  var attacking : Boolean = false
-  var returning : Boolean = false
+  var attacking: Boolean = false
+  var dashing: Boolean = false
+  var lastDashTime: Long = 0L
+  val dashCooldown: Long = 40000L // Cooldown period in milliseconds, restarts every 40 seconds (e.g., 5000ms = 5 seconds)
 
-   // create a dash feature for the boss before dragon swarm happens
-  def dashToPlayer(player:Player) : Unit =
-    val initialPos = rectangle.x()
+  def dashToPlayer(player: Player): Unit =
+    val currentTime = System.currentTimeMillis()
     val mvmSpeed = 20
-    val stop = 50 // the distance between boss and player
+    val stopDistance = 50 // Define the distance at which the boss should stop
     val direction = if player.rectangle.x() > rectangle.x() then 1 else -1
 
-    if !attacking then
-      if math.abs(player.rectangle.x() - rectangle.x()) > stop then
+    // Check if the cooldown period has passed
+    if currentTime - lastDashTime >= dashCooldown then
+      // Start dashing sequence
+      if !dashing && !attacking then
+        dashing = true
+
+    // Move towards the player's position if dashing
+    if dashing && !attacking then
+      if math.abs(player.rectangle.x() - rectangle.x()) > stopDistance then
         rectangle.x = rectangle.x() + direction * mvmSpeed
 
-    // to check if its close enough to activate attack
-    if math.abs(player.rectangle.x() - rectangle.x()) <= stop then
-      attacking = true
-      dragonSwarm(player)
+      // Check if close enough to stop moving and initiate the attack
+      if math.abs(player.rectangle.x() - rectangle.x()) <= stopDistance then
+        attacking = true // Set the attacking flag to true
+        dashing = false // Stop dashing once in range
 
-    if attacking && !returning then
-      returning = true
+    // Perform the attack if within range
+    if attacking then
+      dragonSwarm(player) // Perform the attack
 
-    if returning then
-      if direction == 1 then
-        rectangle.x = rectangle.x() + 700 * mvmSpeed 
-      else
-        rectangle.x = rectangle.x() - 700 * mvmSpeed
-  end dashToPlayer
+    // Reset after the full attack sequence is performed
+    if dragonSwarmPerformed then
+      attacking = false
+      dragonSwarmPerformed = false // Reset for the next dash
+      lastDashTime = currentTime // Update the last dash time
+      dashing = false // Ensure dashing is reset
+
+
+  // a function that sends the boss back to a position
+
+
 
 
 
