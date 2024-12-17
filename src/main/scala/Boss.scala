@@ -33,20 +33,27 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     else
       -1
 
-  def stayPut(duration:Long) : Unit =
-    val move = System.currentTimeMillis() + duration
-    while (System.currentTimeMillis() < move){
-      // does nothing while waiting
-      rectangle.x = rectangle.x()
+  def stayPut(duration: Long): Unit =
+    val endTime = System.currentTimeMillis() + duration
+    while (System.currentTimeMillis() < endTime) {
+      // does nothing, literally
     }
-  def returnPosition () : Unit =
-    val mvmSpeed = 20
-    val targetPosition : Double = 700
 
-    while (math.abs(rectangle.x()-targetPosition)>mvmSpeed){
-      val returnDirection = if rectangle.x() > targetPosition then 1 else -1
-      rectangle.x = rectangle.x() + returnDirection * mvmSpeed
-    }
+  var returning : Boolean = false
+  var targetPos : Double = 700
+
+  def returnCheck() : Unit =
+    returning = true
+
+  def updateCheck() : Unit =
+    if returning then
+      val mvmSpeed = 20
+      if math.abs(rectangle.x()-targetPos) > mvmSpeed then
+        val returnDirection = if rectangle.x() > targetPos then 1 else -1
+        rectangle.x = rectangle.x() + returnDirection * mvmSpeed
+      else
+        rectangle.x = targetPos
+        returning = false
 
   // a mutable set to hold each attack
   var bossAttacks: mutable.Buffer[Any] = mutable.Buffer()
@@ -108,6 +115,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
         dragonSwarmHitCount = 0 // Reset hit count for the next sequence
         prevDS = currentTime
         stayPut(5000)
+        returnCheck()
 
   // to control attack state
   var attacking: Boolean = false
@@ -148,6 +156,8 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       lastDashTime = currentTime // Update the last dash time
       dashing = false // Ensure dashing is reset
 
+    updateCheck()
+
 
   // a function that sends the boss back to a position
 
@@ -176,7 +186,9 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       case attack : AutoAttack => attack.xPos >= 0 && attack.xPos <= 800
       case beast : BeastAttack => beast.shape.visible.value
       case dragonSwarmAttack: DragonSwarmAttack => dragonSwarmAttack.shape.visible.value
-
+  
+  
+  //currently for testing only
   def resetAttack(): Unit =
     println("Resetting attacks")
 
