@@ -33,11 +33,17 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     else
       -1
 
-  def stayPut(duration: Long): Unit =
-    val endTime = System.currentTimeMillis() + duration
-    while (System.currentTimeMillis() < endTime) {
-      // does nothing, literally
-    }
+  var waiting: Boolean = false
+  var waitEndTime: Long = 0L
+
+  def startWait(duration: Long): Unit =
+    waiting = true
+    waitEndTime = System.currentTimeMillis() + duration
+
+  def updateWait(): Unit =
+    if waiting && System.currentTimeMillis() >= waitEndTime then
+      waiting = false
+      returnCheck() // Start returning after wait is complete
 
   var returning : Boolean = false
   var targetPos : Double = 700
@@ -45,11 +51,13 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   def returnCheck() : Unit =
     returning = true
 
-  def updateCheck() : Unit =
-    if returning then
+  def updateCheck(): Unit =
+    if waiting then
+      updateWait()
+    else if returning then
       val mvmSpeed = 20
-      if math.abs(rectangle.x()-targetPos) > mvmSpeed then
-        val returnDirection = if rectangle.x() > targetPos then 1 else -1
+      if math.abs(rectangle.x() - targetPos) > mvmSpeed then
+        val returnDirection = if rectangle.x() > targetPos then -1 else 1
         rectangle.x = rectangle.x() + returnDirection * mvmSpeed
       else
         rectangle.x = targetPos
@@ -114,8 +122,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
         dragonSwarmPerformed = true
         dragonSwarmHitCount = 0 // Reset hit count for the next sequence
         prevDS = currentTime
-        stayPut(5000)
-        returnCheck()
+        startWait(5000)
 
   // to control attack state
   var attacking: Boolean = false
@@ -186,8 +193,8 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       case attack : AutoAttack => attack.xPos >= 0 && attack.xPos <= 800
       case beast : BeastAttack => beast.shape.visible.value
       case dragonSwarmAttack: DragonSwarmAttack => dragonSwarmAttack.shape.visible.value
-  
-  
+
+
   //currently for testing only
   def resetAttack(): Unit =
     println("Resetting attacks")
