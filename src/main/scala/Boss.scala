@@ -128,7 +128,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   var attacking: Boolean = false
   var dashing: Boolean = false
   var lastDashTime: Long = 0L
-  val dashCooldown: Long = 40000L // Cooldown period in milliseconds, restarts every 40 seconds (e.g., 5000ms = 5 seconds)
+  val dashCooldown: Long = 15000L // Cooldown period in milliseconds, restarts every 40 seconds (e.g., 5000ms = 5 seconds)
 
   def dashToPlayer(player: Player): Unit =
     val currentTime = System.currentTimeMillis()
