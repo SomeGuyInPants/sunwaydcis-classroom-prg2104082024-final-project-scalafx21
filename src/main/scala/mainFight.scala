@@ -9,6 +9,7 @@ import scalafx.animation.AnimationTimer
 import scalafx.scene.SceneIncludes.jfxScene2sfx
 import scala.collection.mutable
 import scalafx.scene.text.{Font, Text}
+import scalafx.scene.Node
 
 
 
@@ -45,10 +46,11 @@ object mainFight extends JFXApp3:
     stage = new JFXApp3.PrimaryStage:
         title = "Main Game"
         scene = new Scene(800, 800):
-          content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map:
-            case attack : AutoAttack => attack.shape
-            case beast : BeastAttack => beast.shape
-            case dragonSwarm : DragonSwarmAttack => dragonSwarm.shape
+          content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.flatMap: //flat map to ensure they are correctly formed
+            case attack : AutoAttack => Seq(attack.shape : Node) //initializes the shape with Node to avoid type mismatch
+            case beast : BeastAttack => Seq(beast.shape : Node)
+            case dragonSwarm : DragonSwarmAttack => Seq(dragonSwarm.shape : Node)
+            case holyLance : HolyLanceAttack => holyLance.spears.map(_.shape : Node)
 
 
           onKeyPressed = (event) =>
@@ -75,7 +77,10 @@ object mainFight extends JFXApp3:
       //boss.demonFang()
       //boss.checkDistance(player) // used to check when Beast should activate
       //boss.dragonSwarm()
-      boss.dashToPlayer(player)
+      //boss.dashToPlayer(player)
+      //boss.holyLance(player)
+      boss.startCasting()
+      boss.castHolyLance(player)
       boss.updateAtt()
 
       // Reset the boss's attack for testing purposes
@@ -88,10 +93,19 @@ object mainFight extends JFXApp3:
       if player.Health == 0 && !gameOver then
         gameOverScreen()
       */
-      stage.scene().content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.map:
-        case attack : AutoAttack => attack.shape
-        case beast : BeastAttack => beast.shape
-        case dragonSwarm: DragonSwarmAttack => dragonSwarm.shape
+      stage.scene().content = Seq(
+        player.rectangle,
+        player.showAttack,
+        player.showHealth,
+        player.healthText,
+        player.hit,
+        boss.rectangle,
+        gameOverText
+      ) ++ boss.bossAttacks.flatMap:
+        case attack: AutoAttack => Seq(attack.shape: Node)
+        case beast: BeastAttack => Seq(beast.shape: Node)
+        case dragonSwarm: DragonSwarmAttack => Seq(dragonSwarm.shape: Node)
+        case holyLance: HolyLanceAttack => holyLance.spears.map(_.shape : Node)
 
     }
     timer.start()

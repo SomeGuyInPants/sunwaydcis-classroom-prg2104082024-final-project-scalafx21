@@ -24,6 +24,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   var demonFangPerformed : Boolean = false
   var beastPerformed : Boolean = false
   var dragonSwarmPerformed : Boolean = false
+  var holyLancePerformed : Boolean = false
 
   val stageMidPoint: Double = 400 // Half of the stage size
 
@@ -165,10 +166,29 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
 
     updateCheck()
 
+  var castStartTime : Long = 0L
+  var castStart : Boolean = false
+  var castTime : Long = 5000L
 
-  // a function that sends the boss back to a position
+  def startCasting() : Unit =
+    if !castStart then
+      castStart = true
+      castStartTime = System.currentTimeMillis()
+
+  def castHolyLance(player : Player) : Unit =
+    if castStart then
+      val currentTime = System.currentTimeMillis()
+      if currentTime - castStartTime >= castTime then
+        castStart = false
+        holyLance(player)
 
 
+  def holyLance(player:Player) : Unit =
+    if !holyLancePerformed then
+      val attackDirection = checkDirection(player)
+      val newAttack = new HolyLanceAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection, player)
+      bossAttacks += newAttack
+      holyLancePerformed = true
 
 
 
@@ -189,10 +209,12 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       case attack : AutoAttack => attack.update()
       case beast : BeastAttack  => beast.update()
       case dragonSwarmAttack: DragonSwarmAttack => dragonSwarmAttack.update()
+      case holyLance: HolyLanceAttack => holyLance.update()
     bossAttacks = bossAttacks.filter:
       case attack : AutoAttack => attack.xPos >= 0 && attack.xPos <= 800
       case beast : BeastAttack => beast.shape.visible.value
       case dragonSwarmAttack: DragonSwarmAttack => dragonSwarmAttack.shape.visible.value
+      case holyLance: HolyLanceAttack => holyLance.spears.nonEmpty
 
 
   //currently for testing only

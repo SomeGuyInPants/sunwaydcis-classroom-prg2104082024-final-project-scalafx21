@@ -200,8 +200,11 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
             val checkDirection = if boss.rectangle.x() < rectangle.x() then
               1 else
               -1
-              
-       
+
+      case holyLance : LightSpears =>
+        if bossHLCollision(this,holyLance) then 
+          println("Player hit by Holy Lance")
+          Health -= 1
       case _ => // do nothing
     }
 
