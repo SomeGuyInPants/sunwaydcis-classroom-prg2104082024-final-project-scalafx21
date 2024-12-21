@@ -82,17 +82,14 @@ object mainFight extends JFXApp3:
       boss.startCasting()
       boss.castHolyLance(player)
       boss.updateAtt()
-
+      
       // Reset the boss's attack for testing purposes
       if keyInput.contains(KeyCode.R) then boss.resetAttack()
 
       if !gameOver then
         if player.Health == 0 || boss.health == 0 then
           gameOverScreen()
-      /*
-      if player.Health == 0 && !gameOver then
-        gameOverScreen()
-      */
+
       stage.scene().content = Seq(
         player.rectangle,
         player.showAttack,

@@ -181,7 +181,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       if currentTime - castStartTime >= castTime then
         castStart = false
         holyLance(player)
-
+      
 
   def holyLance(player:Player) : Unit =
     if !holyLancePerformed then

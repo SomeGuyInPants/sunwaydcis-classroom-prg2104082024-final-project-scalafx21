@@ -25,7 +25,7 @@ trait Hit :
     val attack = attacking.shape.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
     attack.intersects(receiver)
-    
+
   def bossBeastCollision (other : Hit, attacking : BeastAttack) : Boolean =
     val attack = attacking.shape.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
@@ -35,11 +35,13 @@ trait Hit :
     val attack = attacking.shape.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
     attack.intersects(receiver)
-  
-  def bossHLCollision (other:Hit, attacking : LightSpears) : Boolean =
-    val attack = attacking.shape.boundsInParent()
+
+  def bossHLCollision (other:Hit, attacking : HolyLanceAttack) : Boolean =
     val receiver = other.rectangle.boundsInParent()
-    attack.intersects(receiver)
+    attacking.spears.exists( spear =>
+      val attack = spear.shape.boundsInParent()
+      attack.intersects(receiver)
+    )
 
 object testRoom extends JFXApp3:
   override def start(): Unit =

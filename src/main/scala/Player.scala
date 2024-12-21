@@ -201,21 +201,14 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
               1 else
               -1
 
-      case holyLance : LightSpears =>
+      case holyLance : HolyLanceAttack =>
         if bossHLCollision(this,holyLance) then 
-          println("Player hit by Holy Lance")
-          Health -= 1
+          if hitDelay - hitCooldown > 500 then
+            println("Player hit by Holy Lance")
+            Health -= 1
+            hitCooldown = hitDelay
+          
       case _ => // do nothing
     }
 
-/*
-bossAttacks.foreach { pellet =>
-  if dummyAACollision(this, pellet) then
-    if hitDelay - hitCooldown > 500 then
-      println("Player hit by dummy AA")
-      Health -= 1
-      //skidSound.play()
-      hitCooldown = hitDelay
-}
-    */
     

@@ -72,28 +72,40 @@ class HolyLanceAttack(var xPos: Double, var yPos: Double, val direction: Int, pl
 
   // Create and position spears above the player
   for i <- 0 until 5 do
-    val angle = i * (2* math.Pi / 5)
+    val angle = i * (2 * math.Pi / 5)
     val playerCenterX = player.rectangle.x() + player.rectangle.width() / 2
-    val playerCenterY = player.rectangle.y() - 200 // Position spears above the player
+    val playerCenterY = player.rectangle.y() - 200
     val spearX = playerCenterX + math.cos(angle) * 100
     val spearY = playerCenterY + math.sin(angle) * 100
     val spear = new LightSpears(spearX, spearY)
-    spear.toPosition(playerCenterX, playerCenterY) // Position above player
+    spear.toPosition(playerCenterX, playerCenterY)
     spears += spear
 
   def update(): Unit =
     val currentTime = System.currentTimeMillis()
-    if currentTime - lastStrike > strikeInterval && spearIndex < spears.length then
-      val playerCenterX = player.rectangle.x() + player.rectangle.width() / 2
-      val playerCenterY = player.rectangle.y() + player.rectangle.height()
-      spears(spearIndex).strike(playerCenterX, playerCenterY)
-      lastStrike = currentTime
-      spearIndex += 1
+    if spearIndex < spears.length then
+      if currentTime - lastStrike > strikeInterval then
+        val playerCenterX = player.rectangle.x() + player.rectangle.width() / 2
+        val playerCenterY = player.rectangle.y() + player.rectangle.height()
+        spears(spearIndex).strike(playerCenterX, playerCenterY)
+        lastStrike = currentTime
+        spearIndex += 1
+        println(s"Spear $spearIndex struck at $currentTime")
 
-    // Update spear positions
-    spears.foreach(_.update())
+    // Update spear positions and set visibility
+    spears.foreach:
+      spear =>
+        spear.update()
+        if spear.hasStruck then
+          spear.shape.visible = false
 
-    spears = spears.filter(!_.hasStruck)
+    // Check if all spears have struck
+    if spears.forall(_.hasStruck) then
+      spears.clear()
+      spearIndex = 0
+      println(s"All spears have struck and been cleared. Attack sequence complete.")
+
+    println(s"Current spearIndex: $spearIndex, Total spears: ${spears.length}, Struck spears: ${spears.count(_.hasStruck)}")
 
 
 
@@ -110,51 +122,128 @@ class LightSpears(var xPos: Double, var yPos: Double):
   var targetX: Double = 0
   var targetY: Double = 0
   var hoverTime: Long = 0L
-  val hoverDuration: Long = 5000L // Duration to hover above the player
-  val floor : Double = 505
+  val hoverDuration: Long = 2000L
+  val floor: Double = 505
 
   def toPosition(targetX: Double, targetY: Double): Unit =
     this.targetX = targetX
-    this.targetY = targetY 
-
+    this.targetY = targetY
     this.hoverTime = System.currentTimeMillis()
 
   def strike(targetX: Double, targetY: Double): Unit =
     this.targetX = targetX
     this.targetY = floor
-
     this.hoverTime = System.currentTimeMillis()
     abovePlayer = true
 
   def move(): Unit =
     if !hasStruck then
       val speed = 10
-      // Calculate the direction towards the target
       val directionX = targetX - xPos
       val directionY = targetY - yPos
       val distance = math.sqrt(directionX * directionX + directionY * directionY)
-
-      // Ensure we don't divide by zero
       if distance > speed then
         val unitX = directionX / distance
         val unitY = directionY / distance
-
-        if distance > speed then
-          xPos += unitX * speed
-          yPos += unitY * speed
-          shape.centerX = xPos
-          shape.centerY = yPos
+        xPos += unitX * speed
+        yPos += unitY * speed
+        shape.centerX = xPos
+        shape.centerY = yPos
+      else
+        if !abovePlayer then
+          if System.currentTimeMillis() - hoverTime >= hoverDuration then
+            abovePlayer = true
+            this.targetY = floor
         else
-          if !abovePlayer then
-            // When the spear reaches the initial target Y position, hover for a while
-            if System.currentTimeMillis() - hoverTime >= hoverDuration then
-              abovePlayer = true
-              // Set new target to strike down
-              this.targetY = floor
-          else
-            println("Spear has struck")
-            hasStruck = true
+          hasStruck = true
 
   def update(): Unit =
     move()
 
+
+/*
+class HolyLanceAttack(var xPos: Double, var yPos: Double, val direction: Int, player: Player):
+  var spears = mutable.Buffer[LightSpears]()
+  var spearIndex = 0
+  var lastStrike: Long = 0L
+  val strikeInterval: Long = 300L
+
+  // Create and position spears above the player
+  for i <- 0 until 5 do
+    val angle = i * (2 * math.Pi / 5)
+    val playerCenterX = player.rectangle.x() + player.rectangle.width() / 2
+    val playerCenterY = player.rectangle.y() - 200
+    val spearX = playerCenterX + math.cos(angle) * 100
+    val spearY = playerCenterY + math.sin(angle) * 100
+    val spear = new LightSpears(spearX, spearY)
+    spear.toPosition(playerCenterX, playerCenterY)
+    spears += spear
+
+  def update(): Unit =
+    val currentTime = System.currentTimeMillis()
+    if currentTime - lastStrike > strikeInterval && spearIndex < spears.length then
+      val playerCenterX = player.rectangle.x() + player.rectangle.width() / 2
+      val playerCenterY = player.rectangle.y() + player.rectangle.height()
+      spears(spearIndex).strike(playerCenterX, playerCenterY)
+      lastStrike = currentTime
+      spearIndex += 1
+
+    // Update spear positions
+    spears.foreach(_.update())
+    spears = spears.filter(!_.hasStruck)
+
+class LightSpears(var xPos: Double, var yPos: Double):
+  val shape = new Ellipse():
+    centerX = xPos
+    centerY = yPos
+    fill = Color.Red
+    radiusX = 5
+    radiusY = 20
+
+  var hasStruck: Boolean = false
+  var abovePlayer: Boolean = false
+  var targetX: Double = 0
+  var targetY: Double = 0
+  var hoverTime: Long = 0L
+  val hoverDuration: Long = 2000L
+  val floor: Double = 505
+
+  def toPosition(targetX: Double, targetY: Double): Unit =
+    this.targetX = targetX
+    this.targetY = targetY
+    this.hoverTime = System.currentTimeMillis()
+
+  def strike(targetX: Double, targetY: Double): Unit =
+    this.targetX = targetX
+    this.targetY = floor
+    this.hoverTime = System.currentTimeMillis()
+    abovePlayer = true
+
+  def move(): Unit =
+    if !hasStruck then
+      val speed = 10
+      // calculate direction towards target
+      val directionX = targetX - xPos
+      val directionY = targetY - yPos
+      val distance = math.sqrt(directionX * directionX + directionY * directionY)
+      if distance > speed then
+        val unitX = directionX / distance
+        val unitY = directionY / distance
+        xPos += unitX * speed
+        yPos += unitY * speed
+        shape.centerX = xPos
+        shape.centerY = yPos
+
+      else
+        if !abovePlayer then
+          if System.currentTimeMillis() - hoverTime >= hoverDuration then
+            abovePlayer = true
+            this.targetY = floor
+        else
+          hasStruck = true
+
+
+  def update(): Unit =
+    move()
+
+*/
