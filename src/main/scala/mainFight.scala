@@ -22,7 +22,7 @@ object mainFight extends JFXApp3:
     val keyInput: mutable.Set[KeyCode] = mutable.Set()
     val player = new Player(100,455)
     //player.Health = 0
-    val boss = new Boss(700,455)
+    val boss = new Boss(700,455,player)
 
     val gameOverText = new Text():
       text = ""
@@ -79,8 +79,9 @@ object mainFight extends JFXApp3:
       //boss.dragonSwarm()
       //boss.dashToPlayer(player)
       //boss.holyLance(player)
-      boss.startCasting(player)
+      //boss.startCasting(player)
       //boss.castHolyLance(player)
+      boss.executePattern()
       boss.updateAtt()
       
       // Reset the boss's attack for testing purposes

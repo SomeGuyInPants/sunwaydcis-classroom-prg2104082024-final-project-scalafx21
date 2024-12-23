@@ -6,7 +6,7 @@ import java.nio.file.Paths
 import scala.collection.mutable
 
 
-class Boss(val initialX : Double, val initialY: Double) extends Hit :
+class Boss(val initialX : Double, val initialY: Double, player:Player) extends Hit :
   var health : Double = 50
   val damage : Double = 1
 
@@ -128,8 +128,37 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   var attacking: Boolean = false
   var dashing: Boolean = false
   var lastDashTime: Long = 0L
+  var targetReached : Boolean = false
   val dashCooldown: Long = 15000L // Cooldown period in milliseconds, restarts every 40 seconds (e.g., 5000ms = 5 seconds)
 
+  def dashToPlayer(player: Player): Unit =
+    val currentTime = System.currentTimeMillis()
+    val mvmSpeed = 20
+    val stopDistance = 50
+    val direction = if player.rectangle.x() > rectangle.x() then 1 else -1
+
+    if currentTime - lastAttack >= dashCooldown then
+      if !dashing && !attacking then
+        dashing = true
+
+    if dashing && !attacking then
+      if math.abs(player.rectangle.x() - rectangle.x()) > stopDistance then
+        rectangle.x = rectangle.x() + direction * mvmSpeed
+      if math.abs(player.rectangle.x() - rectangle.x()) <= stopDistance then
+        attacking = true
+        dashing = false
+
+    if attacking then
+      dragonSwarm(player)
+
+    if dragonSwarmPerformed then
+      attacking = false
+      dragonSwarmPerformed = false
+      lastAttack = currentTime
+      dashing = false
+
+    updateCheck()
+  /*
   def dashToPlayer(player: Player): Unit =
     val currentTime = System.currentTimeMillis()
     val mvmSpeed = 20
@@ -164,7 +193,7 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       dashing = false // Ensure dashing is reset
 
     updateCheck()
-
+*/
   var castStartTime : Long = 0L
   var castStart : Boolean = false
   var castTime : Long = 5000L
@@ -195,19 +224,6 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
       bossAttacks += newAttack
       holyLancePerformed = true
 
-
-
-
-
-  /*
-  // close ranged attack, boss will dash close to the player and do a 3-swing combo then dash towards the opposite end(?)
-  def dragonSwarm() : Unit =
-    if !dragonSwarmPerformed  then
-      val attackDirection = checkDirection
-      val newAttack = new DragonSwarmAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, checkDirection)
-      bossAttacks += newAttack
-      dragonSwarmPerformed = true
-*/
 
   def updateAtt() : Unit =
     bossAttacks.foreach:
@@ -248,3 +264,23 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   def addAttToPattern(delay:Long, attack : () => Unit) : Unit =
     attackPattern.enqueue((delay,attack))
 
+  def executePattern() : Unit =
+    val currentTime = System.currentTimeMillis()
+    if attackPattern.nonEmpty && currentTime - lastAttack > attackPattern.front._1 then
+      val (_,attack) = attackPattern.dequeue()
+      println(s"Executing attack at $currentTime") // Debug statement
+      attack()
+      lastAttack = currentTime
+
+  def definePattern(player:Player) : Unit =
+    addAttToPattern(100L, () => demonFang(player))
+    addAttToPattern(5000L, () =>
+      dashToPlayer(player)
+      println("Executing dashToPlayer")
+    )
+    addAttToPattern(15000L, () => 
+      startCasting(player)
+      println("Casting")
+    )
+
+  definePattern(player)
