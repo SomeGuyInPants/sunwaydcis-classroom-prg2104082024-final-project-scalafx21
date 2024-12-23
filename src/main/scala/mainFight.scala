@@ -79,8 +79,8 @@ object mainFight extends JFXApp3:
       //boss.dragonSwarm()
       //boss.dashToPlayer(player)
       //boss.holyLance(player)
-      boss.startCasting()
-      boss.castHolyLance(player)
+      boss.startCasting(player)
+      //boss.castHolyLance(player)
       boss.updateAtt()
       
       // Reset the boss's attack for testing purposes

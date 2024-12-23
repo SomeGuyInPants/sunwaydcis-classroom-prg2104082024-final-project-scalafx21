@@ -18,7 +18,6 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     x = initialX
     y = initialY
 
-  var lastAttack: Long = 0L
 
   // to track the activation of attacks
   var demonFangPerformed : Boolean = false
@@ -170,18 +169,24 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
   var castStart : Boolean = false
   var castTime : Long = 5000L
 
-  def startCasting() : Unit =
+  def startCasting(player:Player) : Unit =
     if !castStart then
       castStart = true
       castStartTime = System.currentTimeMillis()
 
+    if castStart then
+      val currentTime = System.currentTimeMillis()
+      if currentTime - castStartTime >= castTime then
+        castStart = false
+        holyLance(player)
+  /*
   def castHolyLance(player : Player) : Unit =
     if castStart then
       val currentTime = System.currentTimeMillis()
       if currentTime - castStartTime >= castTime then
         castStart = false
         holyLance(player)
-      
+      */
 
   def holyLance(player:Player) : Unit =
     if !holyLancePerformed then
@@ -235,3 +240,11 @@ class Boss(val initialX : Double, val initialY: Double) extends Hit :
     //demonFang() // This will add Demon Fang to `bossAttacks`
     //Beast() // Forces Beast to appear without needing proximity conditions
     //dragonSwarm() // Assuming dragonSwarm() is uncommented or needs similar behavior
+
+
+  var attackPattern = mutable.Queue[(Long,() => Unit)]()
+  var lastAttack: Long = 0L
+
+  def addAttToPattern(delay:Long, attack : () => Unit) : Unit =
+    attackPattern.enqueue((delay,attack))
+
