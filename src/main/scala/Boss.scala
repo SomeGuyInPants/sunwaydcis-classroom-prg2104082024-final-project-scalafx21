@@ -231,23 +231,44 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
     //Beast() // Forces Beast to appear without needing proximity conditions
     //dragonSwarm() // Assuming dragonSwarm() is uncommented or needs similar behavior
 
+  var phaseStartTime : Long =0
+  var currentPhase : Int = 0
+  // Method to manage attack phases and timings
+  def managePhases(): Unit =
+    val currentTime = System.currentTimeMillis()
 
-  var currentState : String = "Idle" //State of boss
-  def executePattern() : Unit =
-    currentState match
-      case "Idle" =>
-        //changing states
-        if System.currentTimeMillis() - lastAttack > 2000 then
-          currentState = "Attacking"
-      case "Attacking" =>
-        // transition state to idle
-        if System.currentTimeMillis() - lastAttack > 2000 then
-          currentState = "Returning"
-      case "Returning" =>
-        updateCheck()
-        if !returning then
-          currentState = "Idle"
-  def chooseAttack(player:Player) : Unit =
-    if !demonFangPerformed then demonFang(player)
-    else if !dragonSwarmPerformed then dashToPlayer(player)
-    else if !holyLancePerformed then startCasting(player)
+    // Transition between phases based on time
+    currentPhase match
+      case 0 =>
+        // Initial phase, just waiting to start attacks
+        if currentTime - phaseStartTime > 2000 then
+          currentPhase = 1
+          phaseStartTime = currentTime
+
+      case 1 =>
+        // Perform first type of attack
+        if currentTime - lastAttack > 1000 then
+          demonFang(player)
+          lastAttack = currentTime
+        if currentTime - phaseStartTime > 5000 then
+          currentPhase = 2
+          phaseStartTime = currentTime
+
+      case 2 =>
+        // Perform 2nd type of attack
+        if currentTime - lastAttack > 2000 then
+          dashToPlayer(player)
+          
+        if currentTime - phaseStartTime > 10000 then
+          currentPhase = 3
+          phaseStartTime = currentTime
+          lastAttack = currentTime
+
+      case 3 =>
+        // Perform 3rd type of attack (casting spell)
+        if currentTime - lastAttack > 2500 then
+          startCasting(player)
+          lastAttack = currentTime
+        if currentTime - phaseStartTime > 12000 then
+          currentPhase = 0  // Loop back to initial phase
+          phaseStartTime = currentTime

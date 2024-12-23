@@ -81,7 +81,7 @@ object mainFight extends JFXApp3:
       //boss.holyLance(player)
       //boss.startCasting(player)
       //boss.castHolyLance(player)
-      boss.executePattern()
+      boss.managePhases()
       boss.updateAtt()
       
       // Reset the boss's attack for testing purposes
