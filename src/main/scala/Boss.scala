@@ -139,6 +139,41 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
     val stopDistance = 50 // Define the distance at which the boss should stop
     val direction = if player.rectangle.x() > rectangle.x() then 1 else -1
 
+    // Start dashing sequence if not already dashing or attacking
+    if !dashing && !attacking && !targetReached then
+      dashing = true
+
+    // Move towards the player's position if dashing
+    if dashing && !attacking then
+      if math.abs(player.rectangle.x() - rectangle.x()) > stopDistance then
+        rectangle.x = rectangle.x() + direction * mvmSpeed
+
+      // Check if close enough to stop moving and initiate the attack
+      if math.abs(player.rectangle.x() - rectangle.x()) <= stopDistance then
+        attacking = true // Set the attacking flag to true
+        dashing = false // Stop dashing once in range
+        targetReached = true // Indicate that the target has been reached
+
+    // Perform the attack if within range
+    if attacking then
+      dragonSwarm(player) // Perform the attack
+
+    // Reset after the full attack sequence is performed
+    if dragonSwarmPerformed then
+      attacking = false
+      dragonSwarmPerformed = false // Reset for the next dash
+      dashing = false // Ensure dashing is reset
+      targetReached = true // Ensure target reached is true after attacking
+
+    updateCheck()
+
+  /*
+  def dashToPlayer(player: Player): Unit =
+    val currentTime = System.currentTimeMillis()
+    val mvmSpeed = 20
+    val stopDistance = 50 // Define the distance at which the boss should stop
+    val direction = if player.rectangle.x() > rectangle.x() then 1 else -1
+
     // Check if the cooldown period has passed
     if currentTime - lastDashTime >= dashCooldown then
       // Start dashing sequence
@@ -167,7 +202,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
       dashing = false // Ensure dashing is reset
 
     updateCheck()
-
+*/
   var castStartTime : Long = 0L
   var castStart : Boolean = false
   var castTime : Long = 5000L
@@ -258,7 +293,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
         // Perform 2nd type of attack
         if currentTime - lastAttack > 2000 then
           dashToPlayer(player)
-          
+
         if currentTime - phaseStartTime > 10000 then
           currentPhase = 3
           phaseStartTime = currentTime
