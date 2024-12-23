@@ -232,3 +232,22 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
     //dragonSwarm() // Assuming dragonSwarm() is uncommented or needs similar behavior
 
 
+  var currentState : String = "Idle" //State of boss
+  def executePattern() : Unit =
+    currentState match
+      case "Idle" =>
+        //changing states
+        if System.currentTimeMillis() - lastAttack > 2000 then
+          currentState = "Attacking"
+      case "Attacking" =>
+        // transition state to idle
+        if System.currentTimeMillis() - lastAttack > 2000 then
+          currentState = "Returning"
+      case "Returning" =>
+        updateCheck()
+        if !returning then
+          currentState = "Idle"
+  def chooseAttack(player:Player) : Unit =
+    if !demonFangPerformed then demonFang(player)
+    else if !dragonSwarmPerformed then dashToPlayer(player)
+    else if !holyLancePerformed then startCasting(player)
