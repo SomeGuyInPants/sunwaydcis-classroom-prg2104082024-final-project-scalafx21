@@ -44,7 +44,7 @@ object mainFight:
         player.jumpUpdate()
         player.attackUpdate()
         player.healthBar()
-
+        //test
         val hitDelay = System.currentTimeMillis()
         boss.playerHitBoss(player, hitDelay)
         player.checkBossHit(boss, hitDelay, boss.bossAttacks)
