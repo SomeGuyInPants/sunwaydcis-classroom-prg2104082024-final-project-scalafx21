@@ -5,7 +5,6 @@ import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.scene.Scene
 import scalafx.Includes.*
-import scalafx.collections.ObservableBuffer
 import scalafx.scene as sfxs
 import javafx.scene as jfxs
 import scalafx.stage.Stage

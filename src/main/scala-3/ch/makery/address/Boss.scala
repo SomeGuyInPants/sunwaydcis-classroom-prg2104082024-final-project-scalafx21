@@ -71,6 +71,20 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
   // a mutable set to hold each attack
   var bossAttacks: mutable.Buffer[Any] = mutable.Buffer()
 
+  def playerHitBoss(player: Player, hitDelay: Long): Unit =
+    if player.showAttack.visible.value && hitCollision(this , player.showAttack) then
+      if hitDelay - hitCooldown > 300 then
+        println("Hit") // to show that it's really connecting
+        hitCooldown = hitDelay
+        this.health -= 1
+        player.hit.x = this.rectangle.x() + this.rectangle.width() / 2
+        player.hit.y = this.rectangle.y()
+        player.hit.visible = true
+
+    if player.hit.visible.value && hitDelay - hitCooldown > 200 then
+      player.hit.visible = false
+
+
   //ranged attack
   def demonFang(player:Player): Unit = // reusing auto attack of the dummy
     if !demonFangPerformed then
@@ -81,7 +95,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
 
 
   var prevBeast : Long = 0L
-  val beastCooldown: Long = 20000L
+  val beastCooldown: Long = 10000L
 
   def Beast(player:Player) : Unit =
     val cooldownTimer = System.currentTimeMillis()
@@ -127,7 +141,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
         dragonSwarmPerformed = true
         dragonSwarmHitCount = 0 // Reset hit count for the next sequence
         prevDS = currentTime
-        startWait(5000)
+        startWait(2500)
 
   // to control attack state
   var attacking: Boolean = false
@@ -221,7 +235,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
       if currentTime - castStartTime >= castTime then
         castStart = false
         holyLance(player)
-        
+
   def holyLance(player:Player) : Unit =
     if !holyLancePerformed then
       val attackDirection = checkDirection(player)

@@ -1,6 +1,5 @@
 package ch.makery.address
 
-import ch.makery.address.Hit
 import scalafx.scene.media.AudioClip
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
@@ -149,9 +148,10 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
           //skidSound.play()
           hitCooldown = hitDelay
     }
-
+  
   // main fight scene
   def checkBossHit(boss:Boss, hitDelay: Long, bossAttacks: mutable.Buffer[Any]): Unit =
+    /*
     if showAttack.visible.value && hitCollision(boss, showAttack) then
       if hitDelay - hitCooldown > 300 then
         println("Hit") //to show that its really connecting
@@ -162,7 +162,7 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
         hit.visible = true
 
     if hit.visible.value && hitDelay - hitCooldown > 200 then
-      hit.visible = false
+      hit.visible = false */
 
     if walkCollision(boss) then
       if hitDelay - hitCooldown > 500 then
@@ -183,10 +183,9 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
         if bossBeastCollision(this, beast) then
           if hitDelay - hitCooldown > 500 then
             println("Player hit by Beast")
-            Health -= 1
+            Health -= boss.damage
             //skidSound.play()
             hitCooldown = hitDelay
-
             val checkDirection = if boss.rectangle.x() < rectangle.x() then
               1 else
               -1
@@ -194,9 +193,10 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
       
       case dragonSwarm: DragonSwarmAttack =>
         if bossDSCollision(this,dragonSwarm) then
+          println(s"Dragon Swarm bounds") // Debug log println(s"Player bounds: $receiver"
           if hitDelay - hitCooldown > 500 then
             println("Player hit by Dragon Swarm")
-            Health -= 1
+            Health -= boss.damage
             //skidSound.play()
             hitCooldown = hitDelay
     
@@ -208,10 +208,9 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
         if bossHLCollision(this,holyLance) then 
           if hitDelay - hitCooldown > 500 then
             println("Player hit by Holy Lance")
-            Health -= 1
+            Health -= boss.damage
             hitCooldown = hitDelay
           
       case _ => // do nothing
     }
 
-    

@@ -14,7 +14,7 @@ class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) :
     fill = Color.Black
     x = xPos
     y = yPos
-  val speed: Double = 5.0
+  val speed: Double = 10.0
 
   def update(): Unit =
     xPos += direction * speed

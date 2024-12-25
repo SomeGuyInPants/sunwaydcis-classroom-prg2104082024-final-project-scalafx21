@@ -33,9 +33,10 @@ object mainFight:
         case holyLance: HolyLanceAttack => holyLance.spears.map(_.shape: Node)
 
       onKeyPressed = (event) => keyInput += event.code
+
       onKeyReleased = (event) => keyInput -= event.code
 
-      val timer : AnimationTimer = AnimationTimer { _ =>
+      val timer : AnimationTimer = AnimationTimer { _ => // https://www.youtube.com/watch?v=JtuSLFrfaFs (referenece)
         if keyInput.contains(KeyCode.Left) then player.moveLeft()
         if keyInput.contains(KeyCode.Right) then player.moveRight()
         if keyInput.contains(KeyCode.Space) then player.jump()
@@ -45,8 +46,10 @@ object mainFight:
         player.healthBar()
 
         val hitDelay = System.currentTimeMillis()
+        boss.playerHitBoss(player, hitDelay)
         player.checkBossHit(boss, hitDelay, boss.bossAttacks)
 
+        boss.checkDistance(player)
         boss.managePhases()
         boss.updateAtt()
 

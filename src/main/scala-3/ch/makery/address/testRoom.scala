@@ -8,20 +8,80 @@ import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.scene.Scene
 import scalafx.scene.SceneIncludes.jfxScene2sfx
 import scalafx.scene.input.KeyCode
-import scalafx.scene.shape.Rectangle
+import scalafx.scene.shape.{Rectangle, Ellipse, Shape}
 import scalafx.stage
-
 import scala.collection.mutable
 
 
+trait Hit:
+  val rectangle: Rectangle
+  var hitCooldown: Long = 0L
+
+  def checkIntersection(shape: Shape): (Double, Double, Double, Double) =
+    shape match
+      case rect: Rectangle =>
+        (rect.x.value, rect.y.value, rect.width.value, rect.height.value)
+      case ellipse: Ellipse =>
+        (ellipse.centerX.value - ellipse.radiusX.value,
+          ellipse.centerY.value - ellipse.radiusY.value,
+          2 * ellipse.radiusX.value,
+          2 * ellipse.radiusY.value)
+      case _ =>
+        throw new IllegalArgumentException("Unsupported shape type")
+
+  def intersects(bounds1: (Double, Double, Double, Double), bounds2: (Double, Double, Double, Double)): Boolean =
+    val (x1, y1, width1, height1) = bounds1
+    val (x2, y2, width2, height2) = bounds2
+    x1 < x2 + width2 && x1 + width1 > x2 && y1 < y2 + height2 && y1 + height1 > y2
+
+  def hitCollision(other: Hit, attacking: Rectangle): Boolean =
+    val attack = checkIntersection(attacking)
+    val receiver = checkIntersection(other.rectangle)
+    intersects(attack, receiver)
+
+  def walkCollision(other: Hit): Boolean =
+    val player = checkIntersection(rectangle)
+    val enemy = checkIntersection(other.rectangle)
+    intersects(player, enemy)
+
+  def dummyAACollision(other: Hit, attacking: AutoAttack): Boolean =
+    val attack = checkIntersection(attacking.shape)
+    val receiver = checkIntersection(other.rectangle)
+    intersects(attack, receiver)
+
+  def bossBeastCollision(other: Hit, attacking: BeastAttack): Boolean =
+    val attack = checkIntersection(attacking.shape)
+    val receiver = checkIntersection(other.rectangle)
+    println(s"Beast attack bounds: $attack") // debug
+    println(s"Player bounds: $receiver") // debug
+    intersects(attack, receiver)
+
+  def bossDSCollision(other: Hit, attacking: DragonSwarmAttack): Boolean =
+    val attack = checkIntersection(attacking.shape)
+    val receiver = checkIntersection(other.rectangle)
+    println(s"Dragon Swarm bounds: $attack") // debug
+    println(s"Player bounds: $receiver") // debug
+    intersects(attack, receiver)
+
+  def bossHLCollision(other: Hit, attacking: HolyLanceAttack): Boolean =
+    val receiver = checkIntersection(other.rectangle)
+    attacking.spears.exists { spear =>
+      val attack = checkIntersection(spear.shape)
+      println(s"Holy Lance bounds: $attack") // debug
+      println(s"Player bounds: $receiver") // debug
+      intersects(attack, receiver)
+    }
+
+/*
 trait Hit :
   val rectangle : Rectangle
   var hitCooldown : Long = 0L
-  
+
   def hitCollision(other : Hit, attacking : Rectangle): Boolean =
     val attack =  attacking.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
     attack.intersects(receiver)
+
   def walkCollision (other: Hit) : Boolean =
     val player = rectangle.boundsInParent()
     val enemy = other.rectangle.boundsInParent()
@@ -34,11 +94,15 @@ trait Hit :
   def bossBeastCollision (other : Hit, attacking : BeastAttack) : Boolean =
     val attack = attacking.shape.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
+    println(s"Beast attack bounds: $attack") // Debug log
+    println(s"Player bounds: $receiver")
     attack.intersects(receiver)
 
   def bossDSCollision (other: Hit, attacking: DragonSwarmAttack): Boolean =
     val attack = attacking.shape.boundsInParent()
     val receiver = other.rectangle.boundsInParent()
+    println(s"Dragon Swarm bounds: $attack") // Debug log
+    println(s"Player bounds: $receiver")
     attack.intersects(receiver)
 
   def bossHLCollision (other:Hit, attacking : HolyLanceAttack) : Boolean =
@@ -47,7 +111,7 @@ trait Hit :
       val attack = spear.shape.boundsInParent()
       attack.intersects(receiver)
     )
-
+*/
 object testRoom:
 
   def startTestRoom(): Scene =
