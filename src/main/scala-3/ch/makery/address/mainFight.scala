@@ -1,3 +1,5 @@
+package ch.makery.address
+
 import ch.makery.address.*
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
@@ -33,7 +35,7 @@ object mainFight:
       onKeyPressed = (event) => keyInput += event.code
       onKeyReleased = (event) => keyInput -= event.code
 
-      AnimationTimer { _ =>
+      val timer : AnimationTimer = AnimationTimer { _ =>
         if keyInput.contains(KeyCode.Left) then player.moveLeft()
         if keyInput.contains(KeyCode.Right) then player.moveRight()
         if keyInput.contains(KeyCode.Space) then player.jump()
@@ -51,6 +53,8 @@ object mainFight:
         if player.Health == 0 || boss.health == 0 then
           gameOverText.text = if player.Health == 0 then "Game Over" else "Victory!"
           gameOverText.visible = true
+          timer.stop()
+
 
         content = Seq(
           player.rectangle,
@@ -65,7 +69,8 @@ object mainFight:
           case beast: BeastAttack => Seq(beast.shape: Node)
           case dragonSwarm: DragonSwarmAttack => Seq(dragonSwarm.shape: Node)
           case holyLance: HolyLanceAttack => holyLance.spears.map(_.shape: Node)
-      }.start()
+      }
+        timer.start()
 
 
 
@@ -141,7 +146,7 @@ object mainFight extends JFXApp3:
       //boss.managePhases()
       boss.updateAtt()
 
-      
+
       // Reset the boss's attack for testing purposes
       if keyInput.contains(KeyCode.R) then boss.resetAttack()
 

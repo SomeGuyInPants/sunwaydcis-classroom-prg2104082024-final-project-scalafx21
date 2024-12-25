@@ -1,10 +1,13 @@
+package ch.makery.address
+
+import ch.makery.address.Hit
 import scalafx.scene.media.AudioClip
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.text.{Font, Text}
+
 import java.nio.file.Paths
 import scala.collection.mutable
-
 
 
 // initialize player
@@ -22,7 +25,7 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
 
   // to show the attack
   val showAttack = new Rectangle():
-    width = 60
+    width = 45
     height = 15
     fill = Color.Black
     x = x() + rectangle.width()

@@ -1,3 +1,6 @@
+package ch.makery.address
+
+import ch.makery.address.Hit
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 

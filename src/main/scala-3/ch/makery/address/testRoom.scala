@@ -1,11 +1,16 @@
+package ch.makery.address
+
+import ch.makery.address.testRoom
+import scalafx.Includes.jfxKeyEvent2sfx
+import scalafx.animation.AnimationTimer
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.scene.Scene
+import scalafx.scene.SceneIncludes.jfxScene2sfx
 import scalafx.scene.input.KeyCode
 import scalafx.scene.shape.Rectangle
-import scalafx.Includes.jfxKeyEvent2sfx
-import scalafx.animation.AnimationTimer
-import scalafx.scene.SceneIncludes.jfxScene2sfx
+import scalafx.stage
+
 import scala.collection.mutable
 
 
@@ -43,6 +48,48 @@ trait Hit :
       attack.intersects(receiver)
     )
 
+object testRoom:
+
+  def startTestRoom(): Scene =
+    val keyInput: mutable.Set[KeyCode] = mutable.Set()
+    val player = new Player(100,455)
+    val dummy = new Dummy(500,455)
+
+    new Scene(800, 800):
+        content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.rectangle) ++  dummy.attackPellets.map(_.shape)
+
+        // remember to include reference
+        onKeyPressed = (event) =>
+          keyInput += event.code
+        onKeyReleased = (event) =>
+          keyInput -= event.code
+
+        AnimationTimer { _ => //remember to include reference
+          if keyInput.contains(KeyCode.Left) then player.moveLeft()
+          if keyInput.contains(KeyCode.Right) then player.moveRight()
+          if keyInput.contains(KeyCode.Space) then player.jump()
+          if keyInput.contains(KeyCode.Z) then player.attack()
+          player.jumpUpdate()
+          player.attackUpdate()
+    
+          val hitDelay = System.currentTimeMillis()
+          player.checkHitCollision(dummy, hitDelay, dummy.attackPellets)
+    
+          dummy.autoAttack()
+          dummy.updateAA()
+    
+          player.healthBar()
+          dummy.movement()
+    
+          content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, dummy.rectangle) ++ dummy.attackPellets.map(_.shape)
+    
+          // only for test range
+          if player.Health == 0 then
+            player.Health = 10
+    
+        } .start()
+
+/*
 object testRoom extends JFXApp3:
   override def start(): Unit =
     val keyInput: mutable.Set[KeyCode] = mutable.Set()
@@ -86,3 +133,4 @@ object testRoom extends JFXApp3:
     }
     timer.start()
 
+*/

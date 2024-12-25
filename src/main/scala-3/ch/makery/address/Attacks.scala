@@ -1,7 +1,8 @@
+package ch.makery.address
+
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.Rectangle
-import scalafx.scene.shape.Ellipse
-import scalafx.scene.shape.{Path, MoveTo, LineTo}
+import scalafx.scene.shape.*
+
 import scala.collection.mutable
 
 
@@ -41,13 +42,13 @@ class BeastAttack (var xPos: Double, var yPos: Double, val direction: Int) :
 
 class DragonSwarmAttack (var xPos: Double, var yPos: Double, val direction: Int) :
     val shape = new Ellipse:
-      centerX = xPos
+      centerX = xPos + 50
       centerY = yPos
       fill = Color.LightCyan
-      radiusX = 25
+      radiusX = 45
       radiusY = 10
 
-    val speed: Double = 5.0
+    val speed: Double = 15.0
     val maxDistance: Double = speed * 8 // speed x travel time
     val initialX: Double = xPos
 

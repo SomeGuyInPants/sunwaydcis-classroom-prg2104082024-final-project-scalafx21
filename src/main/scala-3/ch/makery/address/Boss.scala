@@ -1,13 +1,17 @@
+package ch.makery.address
+
+import ch.makery.address.Hit
 import scalafx.scene.media.AudioClip
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.{Rectangle,Ellipse,Shape}
+import scalafx.scene.shape.{Ellipse, Rectangle, Shape}
 import scalafx.scene.text.{Font, Text}
+
 import java.nio.file.Paths
 import scala.collection.mutable
 
 
 class Boss(val initialX : Double, val initialY: Double, player:Player) extends Hit :
-  var health : Double = 50
+  var health : Double = 100
   val damage : Double = 1
 
 
@@ -217,15 +221,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
       if currentTime - castStartTime >= castTime then
         castStart = false
         holyLance(player)
-  /*
-  def castHolyLance(player : Player) : Unit =
-    if castStart then
-      val currentTime = System.currentTimeMillis()
-      if currentTime - castStartTime >= castTime then
-        castStart = false
-        holyLance(player)
-      */
-
+        
   def holyLance(player:Player) : Unit =
     if !holyLancePerformed then
       val attackDirection = checkDirection(player)
@@ -252,14 +248,17 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
     println("Resetting attacks")
 
     // Reset performed flags for all attacks
-    //demonFangPerformed = false
-    beastPerformed = false
+    demonFangPerformed = false
     dragonSwarmPerformed = false
+    holyLancePerformed = false
+    dashing = false
+    attacking = false
+    targetReached = false
+    waiting = false
 
     // Reset cooldown timers and other state variables
-    prevBeast = 0L
+
     //prevDS = 0L
-    stickTime = 0L // Resets proximity timer for Beast attack
     dragonSwarmHitCount = 0
     // For testing: Force all attacks to trigger immediately
     //demonFang() // This will add Demon Fang to `bossAttacks`
@@ -306,4 +305,6 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
           lastAttack = currentTime
         if currentTime - phaseStartTime > 12000 then
           currentPhase = 0  // Loop back to initial phase
+          resetAttack()
           phaseStartTime = currentTime
+
