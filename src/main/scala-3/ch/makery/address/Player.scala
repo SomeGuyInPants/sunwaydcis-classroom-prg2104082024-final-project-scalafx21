@@ -4,7 +4,6 @@ import scalafx.scene.media.AudioClip
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.text.{Font, Text}
-
 import java.nio.file.Paths
 import scala.collection.mutable
 
@@ -47,8 +46,6 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
   val hit = new Text():
     text = "Hit!"
     font = new Font(24)
-    x = 0
-    y = 0
 
   // Boolean to check which direction the player is facing whenever they move
   var faceLeft : Boolean = false
@@ -151,18 +148,6 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
   
   // main fight scene
   def checkBossHit(boss:Boss, hitDelay: Long, bossAttacks: mutable.Buffer[Any]): Unit =
-    /*
-    if showAttack.visible.value && hitCollision(boss, showAttack) then
-      if hitDelay - hitCooldown > 300 then
-        println("Hit") //to show that its really connecting
-        hitCooldown = hitDelay
-        boss.health -= 1
-        hit.x = boss.rectangle.x() + boss.rectangle.width() / 2
-        hit.y = boss.rectangle.y()
-        hit.visible = true
-
-    if hit.visible.value && hitDelay - hitCooldown > 200 then
-      hit.visible = false */
 
     if walkCollision(boss) then
       if hitDelay - hitCooldown > 500 then

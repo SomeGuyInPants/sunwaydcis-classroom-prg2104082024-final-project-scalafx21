@@ -7,15 +7,15 @@ import scalafx.scene.{Node, Scene}
 import scalafx.scene.input.KeyCode
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text}
-
 import scala.collection.mutable
 
 
 
 object mainFight:
-
+  
   def createMainScene(): Scene =
     val keyInput: mutable.Set[KeyCode] = mutable.Set()
+    
     val player = new Player(100, 455)
     val boss = new Boss(700, 455, player)
     val gameOverText = new Text():
@@ -31,7 +31,7 @@ object mainFight:
         case beast: BeastAttack => Seq(beast.shape: Node)
         case dragonSwarm: DragonSwarmAttack => Seq(dragonSwarm.shape: Node)
         case holyLance: HolyLanceAttack => holyLance.spears.map(_.shape: Node)
-
+      
       onKeyPressed = (event) => keyInput += event.code
 
       onKeyReleased = (event) => keyInput -= event.code
@@ -44,13 +44,14 @@ object mainFight:
         player.jumpUpdate()
         player.attackUpdate()
         player.healthBar()
-        //test
+        
         val hitDelay = System.currentTimeMillis()
         boss.playerHitBoss(player, hitDelay)
         player.checkBossHit(boss, hitDelay, boss.bossAttacks)
 
         boss.checkDistance(player)
-        boss.managePhases()
+        boss.startCasting(player)
+        //boss.managePhases()
         boss.updateAtt()
 
         if player.Health == 0 || boss.health == 0 then

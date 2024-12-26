@@ -2,7 +2,6 @@ package ch.makery.address
 
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.*
-
 import scala.collection.mutable
 
 
@@ -114,7 +113,7 @@ class LightSpears(var xPos: Double, var yPos: Double):
   val shape = new Ellipse():
     centerX = xPos
     centerY = yPos
-    fill = Color.Red
+    fill = Color.Goldenrod
     radiusX = 5
     radiusY = 20
 

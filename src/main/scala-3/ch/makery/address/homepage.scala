@@ -29,8 +29,8 @@ object homepage extends JFXApp3:
 
 
     stage = new PrimaryStage():
-      title = "AddressApp"
-      //icons += new Image(getClass.getResource("/images/funkybob.png").toExternalForm)
+      title = "Action Game"
+      icons += new Image(getClass.getResource("/images/sword.png").toExternalForm)
       scene = new Scene():
         root = roots.get
     showHomepage()

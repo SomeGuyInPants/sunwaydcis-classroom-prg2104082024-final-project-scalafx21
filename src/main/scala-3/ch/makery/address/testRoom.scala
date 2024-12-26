@@ -13,7 +13,7 @@ import scalafx.stage
 import scala.collection.mutable
 
 
-trait Hit:
+trait Hit[T<:Shape]:
   val rectangle: Rectangle
   var hitCooldown: Long = 0L
 
@@ -34,36 +34,36 @@ trait Hit:
     val (x2, y2, width2, height2) = bounds2
     x1 < x2 + width2 && x1 + width1 > x2 && y1 < y2 + height2 && y1 + height1 > y2
 
-  def hitCollision(other: Hit, attacking: Rectangle): Boolean =
+  def hitCollision(other: Hit[_ <: Shape], attacking: Rectangle): Boolean =
     val attack = checkIntersection(attacking)
     val receiver = checkIntersection(other.rectangle)
     intersects(attack, receiver)
 
-  def walkCollision(other: Hit): Boolean =
+  def walkCollision(other: Hit[_ <: Shape]): Boolean =
     val player = checkIntersection(rectangle)
     val enemy = checkIntersection(other.rectangle)
     intersects(player, enemy)
 
-  def dummyAACollision(other: Hit, attacking: AutoAttack): Boolean =
+  def dummyAACollision(other: Hit[_ <: Shape], attacking: AutoAttack): Boolean =
     val attack = checkIntersection(attacking.shape)
     val receiver = checkIntersection(other.rectangle)
     intersects(attack, receiver)
 
-  def bossBeastCollision(other: Hit, attacking: BeastAttack): Boolean =
+  def bossBeastCollision(other: Hit[_ <: Shape], attacking: BeastAttack): Boolean =
     val attack = checkIntersection(attacking.shape)
     val receiver = checkIntersection(other.rectangle)
     println(s"Beast attack bounds: $attack") // debug
     println(s"Player bounds: $receiver") // debug
     intersects(attack, receiver)
 
-  def bossDSCollision(other: Hit, attacking: DragonSwarmAttack): Boolean =
+  def bossDSCollision(other: Hit[_ <: Shape], attacking: DragonSwarmAttack): Boolean =
     val attack = checkIntersection(attacking.shape)
     val receiver = checkIntersection(other.rectangle)
     println(s"Dragon Swarm bounds: $attack") // debug
     println(s"Player bounds: $receiver") // debug
     intersects(attack, receiver)
 
-  def bossHLCollision(other: Hit, attacking: HolyLanceAttack): Boolean =
+  def bossHLCollision(other: Hit[_ <: Shape], attacking: HolyLanceAttack): Boolean =
     val receiver = checkIntersection(other.rectangle)
     attacking.spears.exists { spear =>
       val attack = checkIntersection(spear.shape)
@@ -72,46 +72,6 @@ trait Hit:
       intersects(attack, receiver)
     }
 
-/*
-trait Hit :
-  val rectangle : Rectangle
-  var hitCooldown : Long = 0L
-
-  def hitCollision(other : Hit, attacking : Rectangle): Boolean =
-    val attack =  attacking.boundsInParent()
-    val receiver = other.rectangle.boundsInParent()
-    attack.intersects(receiver)
-
-  def walkCollision (other: Hit) : Boolean =
-    val player = rectangle.boundsInParent()
-    val enemy = other.rectangle.boundsInParent()
-    player.intersects(enemy)
-  def dummyAACollision (other : Hit, attacking : AutoAttack) : Boolean =
-    val attack = attacking.shape.boundsInParent()
-    val receiver = other.rectangle.boundsInParent()
-    attack.intersects(receiver)
-
-  def bossBeastCollision (other : Hit, attacking : BeastAttack) : Boolean =
-    val attack = attacking.shape.boundsInParent()
-    val receiver = other.rectangle.boundsInParent()
-    println(s"Beast attack bounds: $attack") // Debug log
-    println(s"Player bounds: $receiver")
-    attack.intersects(receiver)
-
-  def bossDSCollision (other: Hit, attacking: DragonSwarmAttack): Boolean =
-    val attack = attacking.shape.boundsInParent()
-    val receiver = other.rectangle.boundsInParent()
-    println(s"Dragon Swarm bounds: $attack") // Debug log
-    println(s"Player bounds: $receiver")
-    attack.intersects(receiver)
-
-  def bossHLCollision (other:Hit, attacking : HolyLanceAttack) : Boolean =
-    val receiver = other.rectangle.boundsInParent()
-    attacking.spears.exists( spear =>
-      val attack = spear.shape.boundsInParent()
-      attack.intersects(receiver)
-    )
-*/
 object testRoom:
 
   def startTestRoom(): Scene =
@@ -122,13 +82,14 @@ object testRoom:
     new Scene(800, 800):
         content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.rectangle) ++  dummy.attackPellets.map(_.shape)
 
-        // remember to include reference
+        // https://rockthejvm.com/articles/make-a-snake-game-with-scala-in-10-minutes
         onKeyPressed = (event) =>
           keyInput += event.code
         onKeyReleased = (event) =>
           keyInput -= event.code
 
-        AnimationTimer { _ => //remember to include reference
+        AnimationTimer { _ => //https://www.youtube.com/watch?v=JtuSLFrfaFs
+          // https://rockthejvm.com/articles/make-a-snake-game-with-scala-in-10-minutes
           if keyInput.contains(KeyCode.Left) then player.moveLeft()
           if keyInput.contains(KeyCode.Right) then player.moveRight()
           if keyInput.contains(KeyCode.Space) then player.jump()

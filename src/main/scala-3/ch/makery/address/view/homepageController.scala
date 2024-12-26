@@ -7,6 +7,7 @@ import javafx.fxml.FXML
 import scalafx.scene.control.Button
 import scalafx.stage.Stage
 import scalafx.Includes.*
+import scalafx.scene.image.Image
 
 import scala.util.{Failure, Success}
 
@@ -19,6 +20,7 @@ class homepageController :
   def mainGame(event:ActionEvent) : Unit =
     val gameStage = new Stage:
       title = "Main Game"
+      icons += new Image(getClass.getResource("/images/sword.png").toExternalForm)
       scene = mainFight.createMainScene()
     gameStage.show()
 
@@ -26,6 +28,7 @@ class homepageController :
     // Open the main game window
     val gameStage = new Stage:
       title = "Training Room"
+      icons += new Image(getClass.getResource("/images/sword.png").toExternalForm)
       scene = testRoom.startTestRoom()
     gameStage.show()
   
