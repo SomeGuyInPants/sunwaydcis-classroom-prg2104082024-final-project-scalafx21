@@ -8,7 +8,7 @@ import scalafx.scene.input.KeyCode
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text}
 import scala.collection.mutable
-
+import scalafx.scene.shape.Rectangle
 
 
 object mainFight:
@@ -24,9 +24,14 @@ object mainFight:
       y = 400
       font = new Font(48)
       fill = Color.Red
-
+    val floor = new Rectangle(): 
+      width = 800 
+      height = 10 
+      fill = Color.Brown 
+      x = 0 
+      y = 510
     new Scene(800, 800):
-      content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.flatMap:
+      content = Seq(floor,player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, boss.rectangle, gameOverText) ++ boss.bossAttacks.flatMap:
         case attack: AutoAttack => Seq(attack.shape: Node)
         case beast: BeastAttack => Seq(beast.shape: Node)
         case dragonSwarm: DragonSwarmAttack => Seq(dragonSwarm.shape: Node)
@@ -50,8 +55,8 @@ object mainFight:
         player.checkBossHit(boss, hitDelay, boss.bossAttacks)
 
         boss.checkDistance(player)
-        boss.startCasting(player)
-        //boss.managePhases()
+        //boss.startCasting(player)
+        boss.managePhases()
         boss.updateAtt()
 
         if player.Health == 0 || boss.health == 0 then
@@ -61,6 +66,7 @@ object mainFight:
 
 
         content = Seq(
+          floor,
           player.rectangle,
           player.showAttack,
           player.showHealth,

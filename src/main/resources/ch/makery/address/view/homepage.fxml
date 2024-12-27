@@ -31,7 +31,7 @@
       </Button>
       <ImageView fitHeight="481.0" fitWidth="380.0" layoutX="400.0" layoutY="37.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../../../../../../../../../Downloads/Ben%20Bigger.png" />
+            <Image url="@../../../../images/Ben%20Bigger.png" />
          </image>
       </ImageView>
       <Button fx:id="exitButton" layoutX="32.0" layoutY="391.0" mnemonicParsing="false" onAction="#exitGame" prefHeight="51.0" prefWidth="192.0" text="Exit">

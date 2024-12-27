@@ -35,8 +35,8 @@ class Dummy(val initialX : Double, val initialY: Double) extends Hit :
   var attSpeed : Double = 5.0
   var attackRange : Int = 300
   val attackInterval: Long = 1200
-
-  // val currentTime = System.currentTimeMillis() just leave it like this if you want it to happen once, if it works, it works
+  
+  // Initiates the auto attaacks
   def autoAttack(): Unit =
     val currentTime = System.currentTimeMillis()
     if currentTime - lastAttack > attackInterval then

@@ -10,7 +10,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
   var health : Double = 100
   val damage : Double = 1
 
-
+  // the boss
   val rectangle = new Rectangle():
     width = 25
     height = 55
@@ -27,7 +27,8 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
   var holyLancePerformed : Boolean = false
 
   val stageMidPoint: Double = 400 // Half of the stage size
-
+  
+  // checks which direction the player is at, +ve = right, -ve = left
   def checkDirection(player: Player): Int =
     if player.rectangle.x() > rectangle.x() then
       1
@@ -36,7 +37,8 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
 
   var waiting: Boolean = false
   var waitEndTime: Long = 0L
-
+  
+  // waiting period after executing dragon swarm
   def startWait(duration: Long): Unit =
     waiting = true
     waitEndTime = System.currentTimeMillis() + duration
@@ -48,7 +50,8 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
 
   var returning : Boolean = false
   var targetPos : Double = 700
-
+  
+  // allows the boss to return to its position after waiting
   def returnCheck() : Unit =
     returning = true
 
@@ -66,7 +69,8 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
 
   // a mutable set to hold each attack
   var bossAttacks: mutable.Buffer[Any] = mutable.Buffer()
-
+  
+  // player to boss collision checking
   def playerHitBoss(player: Player, hitDelay: Long): Unit =
     if player.showAttack.visible.value && hitCollision(this , player.showAttack) then
       if hitDelay - hitCooldown > 300 then
@@ -84,8 +88,8 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
   //ranged attack
   def demonFang(player:Player): Unit = // reusing auto attack of the dummy
     if !demonFangPerformed then
-        val attackDirection = checkDirection(player)
-        val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
+        val attackDirection = checkDirection(player) 
+        val newAttack = new AutoAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection) // adds attack into the set
         bossAttacks += newAttack
         demonFangPerformed = true
 
@@ -95,7 +99,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
 
   def Beast(player:Player) : Unit =
     val cooldownTimer = System.currentTimeMillis()
-    if !beastPerformed && cooldownTimer - prevBeast > beastCooldown then
+    if !beastPerformed && cooldownTimer - prevBeast > beastCooldown then // cooldown timer checking
       val attackDirection = checkDirection(player)
       val newAttack = new BeastAttack(rectangle.x() + rectangle.width() / 2, rectangle.y() + rectangle.height() / 2, attackDirection)
       bossAttacks += newAttack
@@ -107,7 +111,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
   val proximityThreshold : Double = 300.0
   val proximityDuration : Long = 6000
 
-  // method to check when Beast should activate
+  // method to check when Beast should activate, uses the distance between player and boss
   def checkDistance(player:Player) : Unit =
     val distanceBetween = math.abs(player.rectangle.x() - rectangle.x())
     if distanceBetween < proximityThreshold then
@@ -123,7 +127,8 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
   var prevDS : Long = 0L
   val dsInterval : Long = 600L
   var dragonSwarmHitCount : Int = 0 // new
-
+  
+  // similar to demon fang, but with extra logic to ensure the attacks appear accordingly
   def dragonSwarm(player: Player): Unit =
     val currentTime = System.currentTimeMillis()
     if currentTime - prevDS > dsInterval then
@@ -138,22 +143,21 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
         dragonSwarmHitCount = 0 // Reset hit count for the next sequence
         prevDS = currentTime
         startWait(2500)
-
-  // to control attack state
+  
   var attacking: Boolean = false
   var dashing: Boolean = false
   var lastDashTime: Long = 0L
   var targetReached : Boolean = false
   val dashCooldown: Long = 15000L // Cooldown period in milliseconds, restarts every 40 seconds (e.g., 5000ms = 5 seconds)
 
-
+  // gives the boss the ability to dash to the player
   def dashToPlayer(player: Player): Unit =
     val currentTime = System.currentTimeMillis()
     val mvmSpeed = 20
     val stopDistance = 50 // Define the distance at which the boss should stop
     val direction = if player.rectangle.x() > rectangle.x() then 1 else -1
 
-    // Start dashing sequence if not already dashing or attacking
+    // start dashing sequence if not already dashing or attacking
     if !dashing && !attacking && !targetReached then
       dashing = true
 
@@ -164,32 +168,33 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
 
       // Check if close enough to stop moving and initiate the attack
       if math.abs(player.rectangle.x() - rectangle.x()) <= stopDistance then
-        attacking = true // Set the attacking flag to true
-        dashing = false // Stop dashing once in range
-        targetReached = true // Indicate that the target has been reached
+        attacking = true
+        dashing = false 
+        targetReached = true
 
     // Perform the attack if within range
     if attacking then
-      dragonSwarm(player) // Perform the attack
+      dragonSwarm(player) // Performs the attack
 
-    // Reset after the full attack sequence is performed
+    // Resets after the attack is performed
     if dragonSwarmPerformed then
       attacking = false
-      dragonSwarmPerformed = false // Reset for the next dash
-      dashing = false // Ensure dashing is reset
-      targetReached = true // Ensure target reached is true after attacking
+      dragonSwarmPerformed = false 
+      dashing = false 
+      targetReached = true 
 
-    updateCheck()
+    updateCheck() // Executes the returning sequence
 
   var castStartTime : Long = 0L
   var castStart : Boolean = false
   var castTime : Long = 5000L
-
+  
+  // A period where the boss needs to cast the attack
   def startCasting(player:Player) : Unit =
     if !castStart then
       castStart = true
       castStartTime = System.currentTimeMillis()
-
+  
     if castStart then
       val currentTime = System.currentTimeMillis()
       if currentTime - castStartTime >= castTime then
@@ -203,7 +208,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
       bossAttacks += newAttack
       holyLancePerformed = true
 
-
+  // Makes sure the attacks act accordingly by calling the update methods of each attack
   def updateAtt() : Unit =
     bossAttacks.foreach:
       case attack : AutoAttack => attack.update()
@@ -217,7 +222,7 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
       case holyLance: HolyLanceAttack => holyLance.spears.nonEmpty
 
 
-  //currently for testing only
+  // Reset the attacks at the end of each attack cycle
   def resetAttack(): Unit =
     println("Resetting attacks")
 
@@ -229,19 +234,12 @@ class Boss(val initialX : Double, val initialY: Double, player:Player) extends H
     attacking = false
     targetReached = false
     waiting = false
-
-    // Reset cooldown timers and other state variables
-
-    //prevDS = 0L
     dragonSwarmHitCount = 0
-    // For testing: Force all attacks to trigger immediately
-    //demonFang() // This will add Demon Fang to `bossAttacks`
-    //Beast() // Forces Beast to appear without needing proximity conditions
-    //dragonSwarm() // Assuming dragonSwarm() is uncommented or needs similar behavior
 
   var phaseStartTime : Long =0
   var currentPhase : Int = 0
-  // Method to manage attack phases and timings
+  
+  // Method to manage the attack cycle
   def managePhases(): Unit =
     val currentTime = System.currentTimeMillis()
 

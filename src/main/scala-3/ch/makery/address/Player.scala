@@ -52,17 +52,10 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
   def moveLeft () : Unit =
     rectangle.x = rectangle.x() - 5
     faceLeft = true
-    if showAttack.visible.value then
-      showAttack.x = rectangle.x() + rectangle.width()
-      showAttack.y = rectangle.y() + rectangle.height() / 2
-
 
   def moveRight () : Unit =
     rectangle.x = rectangle.x() + 5
     faceLeft = false
-    if showAttack.visible.value then
-      showAttack.x = rectangle.x() + rectangle.width()
-      showAttack.y = rectangle.y() + rectangle.height() / 2
 
   var jumpHeight : Double = 0
   var jumping : Boolean = false
@@ -111,7 +104,7 @@ class Player(val initialX : Double, val initialY: Double) extends Hit:
   def healthBar () : Unit=
     showHealth.width = (Health/10) * 500
 
-  //TESTING PURPOSES
+  // Unused
   lazy private val skidSound = new AudioClip(
     Paths.get("src/main/resources/audio/Metal pipe falling sound effect but its more violent.mp3").toUri.toString)
   

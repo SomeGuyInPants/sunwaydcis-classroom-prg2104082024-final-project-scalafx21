@@ -14,9 +14,6 @@ import scala.util.{Failure, Success}
 @FXML
 class homepageController :
 
-  @FXML private var startButton: Button = _
-  @FXML private var exitButton: Button = _
-
   def mainGame(event:ActionEvent) : Unit =
     val gameStage = new Stage:
       title = "Main Game"

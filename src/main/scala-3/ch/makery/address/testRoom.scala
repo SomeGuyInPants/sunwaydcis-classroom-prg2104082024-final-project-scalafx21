@@ -9,6 +9,7 @@ import scalafx.scene.Scene
 import scalafx.scene.SceneIncludes.jfxScene2sfx
 import scalafx.scene.input.KeyCode
 import scalafx.scene.shape.{Rectangle, Ellipse, Shape}
+import scalafx.scene.paint.Color
 import scalafx.stage
 import scala.collection.mutable
 
@@ -16,7 +17,8 @@ import scala.collection.mutable
 trait Hit[T<:Shape]:
   val rectangle: Rectangle
   var hitCooldown: Long = 0L
-
+  
+  // Method to calculcate the size of the shapes
   def checkIntersection(shape: Shape): (Double, Double, Double, Double) =
     shape match
       case rect: Rectangle =>
@@ -28,12 +30,14 @@ trait Hit[T<:Shape]:
           2 * ellipse.radiusY.value)
       case _ =>
         throw new IllegalArgumentException("Unsupported shape type")
-
+  
+  // Grabs two shapes and checks for intersection
   def intersects(bounds1: (Double, Double, Double, Double), bounds2: (Double, Double, Double, Double)): Boolean =
     val (x1, y1, width1, height1) = bounds1
     val (x2, y2, width2, height2) = bounds2
     x1 < x2 + width2 && x1 + width1 > x2 && y1 < y2 + height2 && y1 + height1 > y2
-
+  
+  // Each takes the shape of their respective things and uses intereects() to check for intersection
   def hitCollision(other: Hit[_ <: Shape], attacking: Rectangle): Boolean =
     val attack = checkIntersection(attacking)
     val receiver = checkIntersection(other.rectangle)
@@ -75,12 +79,18 @@ trait Hit[T<:Shape]:
 object testRoom:
 
   def startTestRoom(): Scene =
-    val keyInput: mutable.Set[KeyCode] = mutable.Set()
+    val keyInput: mutable.Set[KeyCode] = mutable.Set() // Holds the key inputs by the player 
     val player = new Player(100,455)
     val dummy = new Dummy(500,455)
 
+    val floor = new Rectangle():
+      width = 800
+      height = 10
+      fill = Color.Brown
+      x = 0
+      y = 510
     new Scene(800, 800):
-        content = Seq (player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.rectangle) ++  dummy.attackPellets.map(_.shape)
+        content = Seq (floor,player.rectangle,player.showAttack,player.showHealth,player.healthText,player.hit,dummy.rectangle) ++  dummy.attackPellets.map(_.shape)
 
         // https://rockthejvm.com/articles/make-a-snake-game-with-scala-in-10-minutes
         onKeyPressed = (event) =>
@@ -88,7 +98,7 @@ object testRoom:
         onKeyReleased = (event) =>
           keyInput -= event.code
 
-        AnimationTimer { _ => //https://www.youtube.com/watch?v=JtuSLFrfaFs
+        val timer : AnimationTimer = AnimationTimer { _ => //https://www.youtube.com/watch?v=JtuSLFrfaFs
           // https://rockthejvm.com/articles/make-a-snake-game-with-scala-in-10-minutes
           if keyInput.contains(KeyCode.Left) then player.moveLeft()
           if keyInput.contains(KeyCode.Right) then player.moveRight()
@@ -106,13 +116,14 @@ object testRoom:
           player.healthBar()
           dummy.movement()
     
-          content = Seq(player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, dummy.rectangle) ++ dummy.attackPellets.map(_.shape)
+          content = Seq(floor,player.rectangle, player.showAttack, player.showHealth, player.healthText, player.hit, dummy.rectangle) ++ dummy.attackPellets.map(_.shape)
     
           // only for test range
           if player.Health == 0 then
             player.Health = 10
     
-        } .start()
+        } 
+          timer.start()
 
 /*
 object testRoom extends JFXApp3:

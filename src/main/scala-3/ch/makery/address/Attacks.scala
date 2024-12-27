@@ -5,7 +5,7 @@ import scalafx.scene.shape.*
 import scala.collection.mutable
 
 
-// general attack frame for dummy and boss
+// General attack frame for dummy and boss
 class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) :
   val shape = new Rectangle:
     width = 55
@@ -14,12 +14,13 @@ class AutoAttack(var xPos: Double, var yPos: Double, val direction: Int) :
     x = xPos
     y = yPos
   val speed: Double = 10.0
-
+  
+  // Defines how fast it should be moving
   def update(): Unit =
     xPos += direction * speed
     shape.x = xPos
 
-// an attack that would only happen if the player is too close to the boss for too long
+// An attack that would only happen if the player is too close to the boss for too long
 class BeastAttack (var xPos: Double, var yPos: Double, val direction: Int) :
   val shape = new Ellipse:
     centerX = xPos
@@ -32,6 +33,7 @@ class BeastAttack (var xPos: Double, var yPos: Double, val direction: Int) :
   val maxDistance: Double = speed * 8 // speed x travel time
   val initialX : Double = xPos
   
+  // To set how fast the attack should appear and disappear
   def update(): Unit =
     if Math.abs(xPos - initialX) < maxDistance then
       xPos += direction * speed
@@ -50,7 +52,8 @@ class DragonSwarmAttack (var xPos: Double, var yPos: Double, val direction: Int)
     val speed: Double = 15.0
     val maxDistance: Double = speed * 8 // speed x travel time
     val initialX: Double = xPos
-
+    
+    //same as beast
     def update(): Unit =
       if Math.abs(xPos - initialX) < maxDistance then
         xPos += direction * speed
@@ -58,7 +61,7 @@ class DragonSwarmAttack (var xPos: Double, var yPos: Double, val direction: Int)
       else
         shape.visible = false
     
-    // new
+    // resets the visibility and positioning of the shape
     def reset() : Unit =
       xPos = initialX
       shape.centerX = xPos
@@ -80,7 +83,8 @@ class HolyLanceAttack(var xPos: Double, var yPos: Double, val direction: Int, pl
     val spear = new LightSpears(spearX, spearY)
     spear.toPosition(playerCenterX, playerCenterY)
     spears += spear
-
+  
+  // Sequence checking, makes sures the spears attack coordinately
   def update(): Unit =
     val currentTime = System.currentTimeMillis()
     if spearIndex < spears.length then
@@ -103,6 +107,7 @@ class HolyLanceAttack(var xPos: Double, var yPos: Double, val direction: Int, pl
     if spears.forall(_.hasStruck) then
       spears.clear()
       spearIndex = 0
+      // debugging to show me that it worked
       println(s"All spears have struck and been cleared. Attack sequence complete.")
 
     println(s"Current spearIndex: $spearIndex, Total spears: ${spears.length}, Struck spears: ${spears.count(_.hasStruck)}")
@@ -135,13 +140,14 @@ class LightSpears(var xPos: Double, var yPos: Double):
     this.targetY = floor
     this.hoverTime = System.currentTimeMillis()
     abovePlayer = true
-
+  
+  // to initiate the spears moving towards the player
   def move(): Unit =
     if !hasStruck then
-      val speed = 10
-      val directionX = targetX - xPos
+      val speed = 10 // speed of spear
+      val directionX = targetX - xPos // where the spear should be aiming at
       val directionY = targetY - yPos
-      val distance = math.sqrt(directionX * directionX + directionY * directionY)
+      val distance = math.sqrt(directionX * directionX + directionY * directionY) // the height difference between spears and player
       if distance > speed then
         val unitX = directionX / distance
         val unitY = directionY / distance
@@ -150,7 +156,7 @@ class LightSpears(var xPos: Double, var yPos: Double):
         shape.centerX = xPos
         shape.centerY = yPos
       else
-        if !abovePlayer then
+        if !abovePlayer then // the striking sequence
           if System.currentTimeMillis() - hoverTime >= hoverDuration then
             abovePlayer = true
             this.targetY = floor
